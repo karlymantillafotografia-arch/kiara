@@ -5,7 +5,6 @@ import {
   getInviteFromUrl,
   mapsEmbedUrl,
   mapsOpenUrl,
-  passesLabel,
   whatsappConfirmUrl,
 } from './invite'
 import './App.css'
@@ -48,65 +47,18 @@ function Countdown() {
   )
 }
 
-function PoolIcons() {
+function PoolScene() {
   return (
-    <div className="pool__icons" aria-hidden="true">
-      <svg viewBox="0 0 64 64" className="pool__icon">
-        <path
-          d="M8 40c6 0 6-4 12-4s6 4 12 4 6-4 12-4 6 4 12 4"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        />
-        <path
-          d="M8 48c6 0 6-4 12-4s6 4 12 4 6-4 12-4 6 4 12 4"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        />
-        <path
-          d="M20 18c0-4 3-8 8-8s8 4 8 8c0 6-8 14-8 14s-8-8-8-14z"
-          fill="currentColor"
-          opacity="0.9"
-        />
-      </svg>
-      <svg viewBox="0 0 64 64" className="pool__icon">
-        <path
-          d="M14 22h36v6c0 10-8 18-18 18S14 38 14 28v-6z"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-        />
-        <path d="M22 22v-4a10 10 0 0 1 20 0v4" fill="none" stroke="currentColor" strokeWidth="2.5" />
-        <path d="M20 34h24M24 40h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      </svg>
-      <svg viewBox="0 0 64 64" className="pool__icon">
-        <circle cx="32" cy="20" r="8" fill="none" stroke="currentColor" strokeWidth="2.5" />
-        <path
-          d="M18 52c2-10 8-16 14-16s12 6 14 16"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        />
-        <path d="M12 52h40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-      </svg>
-      <svg viewBox="0 0 64 64" className="pool__icon">
-        <rect
-          x="12"
-          y="18"
-          width="40"
-          height="28"
-          rx="4"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-        />
-        <path d="M12 28h40M28 18v28" stroke="currentColor" strokeWidth="2.5" />
-        <circle cx="38" cy="38" r="3" fill="currentColor" />
-      </svg>
+    <div className="pool-scene" aria-hidden="true">
+      <video
+        className="pool-scene__video"
+        src="/pool-party.mp4"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+      />
     </div>
   )
 }
@@ -123,9 +75,13 @@ function ConfirmBlock({ invite }) {
 
   return (
     <div className="confirm">
-      <p className="confirm__text">
-        ¿Nos acompañas? Toca una opción y te abrirá WhatsApp con el mensaje listo para enviarnos.
-      </p>
+      <div className="confirm__text">
+        <p>
+          Confirma tu asistencia antes del <strong>martes 17 de noviembre</strong> para reservar tus
+          pases. Después de esta fecha, no podremos asegurarlos.
+        </p>
+        <p>Selecciona una opción para responder por WhatsApp.</p>
+      </div>
       <div className="confirm__actions">
         <button type="button" className="btn" onClick={() => openWhatsApp(true)}>
           Sí, ahí estaré
@@ -223,13 +179,12 @@ export default function App() {
               <h2 className="passes__title">
                 ({invite.pases}) {invite.pases === 1 ? 'pase' : 'pases'} en su honor
               </h2>
-              {invite.para ? (
-                <p className="passes__guest">
-                  Invitación para <strong>{invite.para}</strong>
+              <div className="passes__family">
+                <p className="passes__family-label">Invitados</p>
+                <p className={`passes__family-name ${invite.para ? '' : 'is-empty'}`}>
+                  {invite.para || 'Nombre de la familia o invitados'}
                 </p>
-              ) : (
-                <p className="passes__guest">{passesLabel(invite.pases)} para esta invitación</p>
-              )}
+              </div>
             </motion.section>
 
             <motion.section
@@ -291,19 +246,14 @@ export default function App() {
               </a>
 
               <div className="pool">
-                <PoolIcons />
-                <p className="pool__badge">Importante</p>
-                <p className="pool__title">Pool party</p>
-                <p className="pool__text">
-                  Habrá piscina: no olvides traer <strong>ropa de baño</strong>, toalla y algo cómodo
-                  para después.
-                </p>
-                <ul className="pool__list">
-                  <li>Traje de baño</li>
-                  <li>Toalla</li>
-                  <li>Bloqueador</li>
-                  <li>Cambio de ropa</li>
-                </ul>
+                <PoolScene />
+                <div className="pool__copy">
+                  <p className="pool__title">Pool party</p>
+                  <p className="pool__text">
+                    Habrá piscina: no olvides traer <strong>ropa de baño</strong>, toalla y algo
+                    cómodo para después.
+                  </p>
+                </div>
               </div>
             </motion.section>
 

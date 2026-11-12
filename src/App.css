@@ -328,11 +328,35 @@
   color: var(--navy);
 }
 
-.passes__guest {
-  margin: 0.75rem 0 0;
+.passes__family {
+  margin: 1.15rem auto 0;
+  padding-top: 1rem;
+  width: min(100%, 280px);
+  border-top: 1px solid rgba(110, 31, 50, 0.18);
+}
+
+.passes__family-label {
+  margin: 0 0 0.35rem;
+  font-family: "Libre Baskerville", serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--wine-mid);
+}
+
+.passes__family-name {
+  margin: 0;
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(1.7rem, 6vw, 2.1rem);
+  line-height: 1.15;
+  color: var(--navy);
+}
+
+.passes__family-name.is-empty {
   font-family: "Cormorant Garamond", serif;
   font-size: 1.05rem;
-  color: var(--ink-soft);
+  font-style: italic;
+  color: rgba(61, 83, 102, 0.55);
 }
 
 .intro {
@@ -529,118 +553,121 @@
   filter: none;
 }
 
-/* Pool party destacado */
+/* Pool party — video cuadrado */
 .pool {
+  position: relative;
   margin-top: 1.35rem;
-  padding: 1.2rem 1rem 1.15rem;
-  background:
-    linear-gradient(145deg, rgba(61, 95, 122, 0.14), rgba(183, 208, 226, 0.35) 55%, rgba(110, 31, 50, 0.1));
-  border: 2px solid rgba(61, 95, 122, 0.28);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
-}
-
-.pool__icons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.45rem;
-  margin-bottom: 0.85rem;
-}
-
-.pool__icon {
   width: 100%;
-  max-width: 52px;
-  margin: 0 auto;
-  aspect-ratio: 1;
-  color: var(--navy);
-  padding: 0.45rem;
-  background: rgba(245, 248, 251, 0.75);
-  border: 1px solid rgba(110, 31, 50, 0.18);
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  border: 1px solid rgba(26, 51, 72, 0.35);
+  overflow: hidden;
+  isolation: isolate;
+  background: #0a1824;
 }
 
-.pool__badge {
-  display: inline-block;
-  margin: 0 0 0.35rem;
-  padding: 0.28rem 0.7rem;
-  background: var(--wine);
-  color: var(--cream);
-  font-family: "Libre Baskerville", serif;
-  font-size: 0.62rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+.pool-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.pool-scene__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.pool__copy {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 1.5rem 1.2rem;
+  text-align: center;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(8, 20, 32, 0.2) 0%,
+      rgba(8, 20, 32, 0.45) 45%,
+      rgba(8, 20, 32, 0.58) 100%
+    );
 }
 
 .pool__title {
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.55rem;
   font-family: "Great Vibes", cursive;
-  font-size: 2.15rem;
-  color: var(--navy);
+  font-size: clamp(2.4rem, 9vw, 3rem);
+  color: #fff;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
 }
 
 .pool__text {
-  margin: 0 auto 0.85rem;
-  max-width: 30ch;
+  margin: 0 auto;
+  max-width: 28ch;
   font-family: "Cormorant Garamond", serif;
-  font-size: 1.12rem;
-  color: var(--ink-soft);
+  font-size: 1.15rem;
+  line-height: 1.5;
+  color: rgba(245, 248, 251, 0.95);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.35);
 }
 
 .pool__text strong {
-  color: var(--wine);
-}
-
-.pool__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.4rem;
-}
-
-.pool__list li {
-  padding: 0.45rem 0.35rem;
-  background: rgba(245, 248, 251, 0.8);
-  font-family: "Cormorant Garamond", serif;
-  font-size: 0.98rem;
-  color: var(--navy);
-  border-left: 3px solid var(--wine-mid);
+  color: #f0b4c0;
 }
 
 /* Confirmación + foto */
 .rsvp {
   overflow: hidden;
-  border: 1px solid rgba(61, 95, 122, 0.16);
+  border: 1px solid rgba(61, 95, 122, 0.14);
   box-shadow: 0 22px 48px var(--shadow);
-  background: linear-gradient(180deg, #f5f8fb, #f3eef1);
+  background: linear-gradient(180deg, #d8e0d6 0%, #e8ebe6 28%, #f2f0ee 100%);
   padding: 0;
   text-align: center;
 }
 
 .rsvp__photo {
   position: relative;
-  min-height: 320px;
-  max-height: 48vh;
+  min-height: 360px;
+  max-height: 52vh;
+  overflow: hidden;
 }
 
 .rsvp__photo img {
   width: 100%;
   height: 100%;
-  min-height: 320px;
-  max-height: 48vh;
+  min-height: 360px;
+  max-height: 52vh;
   object-fit: cover;
-  object-position: center 20%;
+  object-position: center 34%;
+  transform: scale(1.18);
+  transform-origin: center 30%;
 }
 
 .rsvp__photo-fade {
   position: absolute;
   inset: auto 0 0;
-  height: 42%;
-  background: linear-gradient(180deg, transparent, rgba(243, 238, 241, 0.96) 70%, #f3eef1);
+  height: 68%;
+  background: linear-gradient(
+    180deg,
+    rgba(216, 224, 214, 0) 0%,
+    rgba(216, 224, 214, 0.12) 22%,
+    rgba(232, 235, 230, 0.38) 45%,
+    rgba(242, 240, 238, 0.72) 68%,
+    rgba(242, 240, 238, 0.92) 85%,
+    #f2f0ee 100%
+  );
+  pointer-events: none;
 }
 
 .rsvp__body {
   position: relative;
-  margin-top: -2.5rem;
+  margin-top: -4.5rem;
   padding: 0 1.35rem 1.6rem;
 }
 
@@ -653,10 +680,22 @@
 }
 
 .confirm__text {
-  margin: 0 0 1rem;
+  margin: 0 0 1.15rem;
+  display: grid;
+  gap: 0.7rem;
   font-family: "Cormorant Garamond", serif;
   font-size: 1.08rem;
+  line-height: 1.45;
   color: var(--ink-soft);
+}
+
+.confirm__text p {
+  margin: 0;
+}
+
+.confirm__text strong {
+  color: var(--wine);
+  font-weight: 600;
 }
 
 .confirm__actions {
@@ -686,10 +725,14 @@
 
   .rsvp__photo,
   .rsvp__photo img {
-    min-height: 280px;
+    min-height: 300px;
   }
 
-  .pool__list {
-    grid-template-columns: 1fr;
+  .rsvp__photo-fade {
+    height: 72%;
+  }
+
+  .rsvp__body {
+    margin-top: -3.5rem;
   }
 }

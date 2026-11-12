@@ -1,4 +1,6 @@
-const DEFAULT_PASSES = 2
+/** Valores por defecto editables. La URL los puede sobrescribir. */
+export const DEFAULT_PASSES = 2
+export const DEFAULT_GUEST = ''
 const MAX_PASSES = 12
 
 /** WhatsApp donde llegan las confirmaciones. Solo dígitos, con código de país. Ej: 573001112233 */
@@ -19,6 +21,11 @@ export const EVENT = {
   datetime: new Date('2026-11-21T18:00:00-05:00'),
 }
 
+/**
+ * Personalización por invitado:
+ *   ?pases=4&para=Familia%20López
+ * También acepta: nombre= / familia=
+ */
 export function getInviteFromUrl(search = window.location.search) {
   const params = new URLSearchParams(search)
   const raw = Number(params.get('pases'))
@@ -27,7 +34,13 @@ export function getInviteFromUrl(search = window.location.search) {
       ? Math.min(MAX_PASSES, Math.floor(raw))
       : DEFAULT_PASSES
 
-  const para = (params.get('para') || '').trim()
+  const para = (
+    params.get('para') ||
+    params.get('nombre') ||
+    params.get('familia') ||
+    DEFAULT_GUEST ||
+    ''
+  ).trim()
 
   return { pases, para }
 }
