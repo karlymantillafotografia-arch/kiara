@@ -3,8 +3,10 @@ export const DEFAULT_PASSES = 2
 export const DEFAULT_GUEST = ''
 const MAX_PASSES = 12
 
-/** WhatsApp donde llegan las confirmaciones. Solo dígitos, con código de país. Ej: 573001112233 */
-export const RSVP_WHATSAPP = (import.meta.env.VITE_WHATSAPP || '').replace(/\D/g, '')
+/** WhatsApp donde llegan las confirmaciones. Solo dígitos, con código de país. */
+export const RSVP_WHATSAPP = (
+  import.meta.env.VITE_WHATSAPP || '573118523499'
+).replace(/\D/g, '')
 
 export const EVENT = {
   name: 'Kiara Karyn Jhordana Mantilla Gómez',
@@ -14,10 +16,16 @@ export const EVENT = {
   dateLong: 'Sábado 21 de noviembre de 2026',
   timeLabel: '6:00 p.m.',
   venue: 'Estadero Las Margaritas',
-  /** Pin aproximado: Estadero Hotel Las Margaritas (Flandes / vía Espinal–Girardot) */
-  mapsQuery: 'Estadero Hotel Las Margaritas Flandes Tolima',
-  mapsLat: 4.215088,
-  mapsLng: -74.849645,
+  /**
+   * Ubicación fijada (coordenadas del pin).
+   * Para cambiarla: abre Google Maps → marca el lugar exacto → clic derecho
+   * "¿Qué hay aquí?" → copia lat,lng → pégalos abajo.
+   * Opcional: pega también el link de "Compartir" en mapsShareUrl.
+   */
+  mapsQuery: 'Estadero Las Margaritas',
+  mapsLat: 7.067944,
+  mapsLng: -70.72675,
+  mapsShareUrl: '',
   datetime: new Date('2026-11-21T18:00:00-05:00'),
 }
 
@@ -51,12 +59,20 @@ export function passesLabel(count) {
 
 export function mapsEmbedUrl() {
   const { mapsLat, mapsLng } = EVENT
-  return `https://maps.google.com/maps?q=${mapsLat},${mapsLng}&z=16&output=embed`
+  const delta = 0.012
+  const left = mapsLng - delta
+  const right = mapsLng + delta
+  const top = mapsLat + delta
+  const bottom = mapsLat - delta
+  // OpenStreetMap se ve siempre en iframe; el botón abre Google Maps con el pin.
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${left}%2C${bottom}%2C${right}%2C${top}&layer=mapnik&marker=${mapsLat}%2C${mapsLng}`
 }
 
 export function mapsOpenUrl() {
-  const { mapsLat, mapsLng, mapsQuery } = EVENT
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${mapsQuery} @${mapsLat},${mapsLng}`)}`
+  const { mapsLat, mapsLng, mapsShareUrl } = EVENT
+  if (mapsShareUrl) return mapsShareUrl
+  // Abre Google Maps con el marcador ya fijado en esas coordenadas
+  return `https://www.google.com/maps?q=${mapsLat},${mapsLng}&z=17`
 }
 
 export function whatsappConfirmUrl({ attending, para, pases }) {

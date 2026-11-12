@@ -16,6 +16,9 @@
   --seal: #6e1f32;
   --cream: #f3eef1;
   --shadow: rgba(18, 15, 20, 0.22);
+  --page-pad: clamp(0.75rem, 3.5vw, 1.25rem);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
 
   --rose-deep: #6e1f32;
   --rose: #8f2d45;
@@ -26,11 +29,13 @@
   line-height: 1.5;
   font-weight: 400;
   color: var(--ink);
-  background: var(--ivory);
+  background: #f4f2f0;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 *,
@@ -41,22 +46,21 @@
 
 html {
   scroll-behavior: smooth;
+  height: 100%;
 }
 
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100vh;
-  background:
-    radial-gradient(ellipse 110% 70% at 50% -12%, rgba(111, 147, 176, 0.32) 0%, transparent 55%),
-    radial-gradient(ellipse 70% 45% at 0% 40%, rgba(110, 31, 50, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse 60% 40% at 100% 80%, rgba(143, 45, 69, 0.1) 0%, transparent 45%),
-    linear-gradient(180deg, #dce8f1 0%, var(--ivory) 48%, #efe6ea 100%);
-  background-attachment: fixed;
+  min-height: 100%;
+  min-height: 100svh;
+  background: #eef1f4;
+  overscroll-behavior-y: none;
 }
 
 #root {
-  min-height: 100vh;
+  min-height: 100%;
+  min-height: 100svh;
 }
 
 button,
@@ -67,13 +71,16 @@ select {
 
 button {
   cursor: pointer;
+  touch-action: manipulation;
 }
 
-img {
+img,
+video {
   max-width: 100%;
   display: block;
 }
 
 a {
   color: inherit;
+  touch-action: manipulation;
 }

@@ -109,56 +109,83 @@ export default function App() {
 
   function openInvitation() {
     setOpened(true)
-    requestAnimationFrame(() => {
-      document.getElementById('contenido')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
-    <div className={`app ${opened ? 'app--opened' : ''}`}>
-      <div className="stage">
-        <p className="stage__eyebrow">Mis XV años</p>
-        <h1 className="stage__name">
-          Kiara
-          <span>Karyn Jhordana</span>
-        </h1>
-
-        <button
-          type="button"
-          className={`envelope ${opened ? 'envelope--open' : ''}`}
-          onClick={openInvitation}
-          aria-label="Abrir invitación"
-          disabled={opened}
-        >
-          <span className="envelope__glow" aria-hidden="true" />
-          <span className="envelope__shadow" />
-          <span className="envelope__body">
-            <span className="envelope__accent" aria-hidden="true" />
-            <span className="envelope__liner" />
-            <span className="envelope__address">
-              <em>Para</em>
-              <strong>{invite.para || 'ti'}</strong>
-            </span>
-          </span>
-          <span className="envelope__flap" aria-hidden="true">
-            <span className="envelope__flap-face" />
-          </span>
-          <span className="envelope__seal" aria-hidden="true">
-            <span>{EVENT.monogram}</span>
-          </span>
-        </button>
-
-        {!opened && <p className="stage__hint">Toca el sobre para abrir</p>}
-      </div>
-
-      <AnimatePresence>
-        {opened && (
-          <motion.div
-            id="contenido"
-            className="content"
+    <div className={`app ${opened ? 'app--opened' : 'app--cover'}`}>
+      <AnimatePresence mode="wait">
+        {!opened ? (
+          <motion.section
+            key="cover"
+            className="cover"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.4 }}
+            exit={{ opacity: 0, y: -12, filter: 'blur(8px)' }}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="cover__bg" aria-hidden="true">
+              <span className="cover__glow" />
+              <span className="cover__fold cover__fold--tl" />
+              <span className="cover__fold cover__fold--br" />
+            </div>
+
+            <div className="cover__content">
+              <p className="cover__eyebrow">Mis XV años</p>
+              <h1 className="cover__title">
+                Kiara
+                <span>Karyn Jhordana</span>
+              </h1>
+              <div className="cover__rule" aria-hidden="true">
+                <i />
+                <em>✦</em>
+                <i />
+              </div>
+
+              <button
+                type="button"
+                className="cover-envelope"
+                onClick={openInvitation}
+                aria-label="Toca el sobre para abrir la invitación"
+              >
+                <span className="cover-envelope__shade" />
+                <span className="cover-envelope__pocket">
+                  {invite.para ? (
+                    <span className="cover-envelope__guest">
+                      Para <strong>{invite.para}</strong>
+                    </span>
+                  ) : null}
+                </span>
+                <span className="cover-envelope__flap" />
+                <span className="cover-envelope__spark cover-envelope__spark--1">✦</span>
+                <span className="cover-envelope__spark cover-envelope__spark--2">✦</span>
+                <span className="cover-envelope__spark cover-envelope__spark--3">✦</span>
+                <span className="cover-envelope__spark cover-envelope__spark--4">✦</span>
+                <span className="cover-envelope__seal">
+                  <span className="cover-envelope__seal-glow" />
+                  <span className="cover-envelope__seal-mark">
+                    <i>✦</i>
+                    <b>{EVENT.monogram}</b>
+                    <i>✦</i>
+                  </span>
+                </span>
+              </button>
+
+              <p className="cover__cta">
+                <span />
+                Toca el sobre para abrir
+                <span />
+              </p>
+            </div>
+          </motion.section>
+        ) : (
+          <motion.div
+            key="content"
+            id="contenido"
+            className="content"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           >
             <motion.section
               className="passes"
@@ -219,12 +246,12 @@ export default function App() {
             >
               <p className="details__label">El gran día</p>
               <h2 className="details__date">{EVENT.dateLong}</h2>
-              <p className="details__stamp">{EVENT.dateLabel}</p>
               <p className="details__time">
                 {EVENT.timeLabel}
                 <span>Te pedimos puntualidad para disfrutar todo juntos</span>
               </p>
 
+              <p className="details__countdown-label">Quedan</p>
               <Countdown />
 
               <div className="details__venue">
