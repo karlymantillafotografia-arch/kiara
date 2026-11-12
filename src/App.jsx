@@ -80,7 +80,6 @@ function ConfirmBlock({ invite }) {
           Confirma tu asistencia antes del <strong>martes 17 de noviembre</strong> para reservar tus
           pases. Después de esta fecha, no podremos asegurarlos.
         </p>
-        <p>Selecciona una opción para responder por WhatsApp.</p>
       </div>
       <div className="confirm__actions">
         <button type="button" className="btn" onClick={() => openWhatsApp(true)}>
@@ -128,6 +127,7 @@ export default function App() {
               <span className="cover__glow" />
               <span className="cover__fold cover__fold--tl" />
               <span className="cover__fold cover__fold--br" />
+              <span className="cover__fold cover__fold--blue" />
             </div>
 
             <div className="cover__content">
@@ -149,6 +149,8 @@ export default function App() {
                 aria-label="Toca el sobre para abrir la invitación"
               >
                 <span className="cover-envelope__shade" />
+                <span className="cover-envelope__back" />
+                <span className="cover-envelope__liner" />
                 <span className="cover-envelope__pocket">
                   {invite.para ? (
                     <span className="cover-envelope__guest">
@@ -156,12 +158,15 @@ export default function App() {
                     </span>
                   ) : null}
                 </span>
+                <span className="cover-envelope__wing cover-envelope__wing--l" />
+                <span className="cover-envelope__wing cover-envelope__wing--r" />
                 <span className="cover-envelope__flap" />
                 <span className="cover-envelope__spark cover-envelope__spark--1">✦</span>
                 <span className="cover-envelope__spark cover-envelope__spark--2">✦</span>
                 <span className="cover-envelope__spark cover-envelope__spark--3">✦</span>
                 <span className="cover-envelope__spark cover-envelope__spark--4">✦</span>
                 <span className="cover-envelope__seal">
+                  <span className="cover-envelope__seal-ring" />
                   <span className="cover-envelope__seal-glow" />
                   <span className="cover-envelope__seal-mark">
                     <i>✦</i>
