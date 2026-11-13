@@ -8,11 +8,48 @@ import {
   whatsappConfirmUrl,
 } from './invite'
 import Registro from './Registro.jsx'
-import { saveConfirmacion } from './rsvpApi'
+import { getConfirmacionByTarjeta, saveConfirmacion } from './rsvpApi'
 import './App.css'
 
 const BG_MUSIC_SRC = '/bg-music.mp3'
 const BG_MUSIC_VOLUME = 0.42
+
+function confirmStorageKey(tarjeta) {
+  return `xv-kiara-confirm:${String(tarjeta || '').trim().toLowerCase()}`
+}
+
+function readLocalConfirm(tarjeta) {
+  try {
+    const raw = localStorage.getItem(confirmStorageKey(tarjeta))
+    if (raw === 'si' || raw === 'no') return raw
+  } catch {
+    /* ignore */
+  }
+  return null
+}
+
+function writeLocalConfirm(tarjeta, estado) {
+  if (estado !== 'si' && estado !== 'no') return
+  try {
+    localStorage.setItem(confirmStorageKey(tarjeta), estado)
+  } catch {
+    /* ignore */
+  }
+}
+
+function clearLocalConfirm(tarjeta) {
+  try {
+    localStorage.removeItem(confirmStorageKey(tarjeta))
+  } catch {
+    /* ignore */
+  }
+}
+
+function confirmedStatusMessage(estado) {
+  return estado === 'si'
+    ? 'Ya confirmaste tu asistencia. Gracias.'
+    : 'Ya registraste que no podrás asistir. Gracias.'
+}
 
 function getRemaining(now) {
   const diff = Math.max(0, EVENT.datetime.getTime() - now.getTime())
@@ -69,26 +106,78 @@ function PoolScene() {
 }
 
 function ConfirmBlock({ invite }) {
-  const [status, setStatus] = useState('')
-  const [saving, setSaving] = useState(false)
   const tarjeta = (invite.para || '').trim() || 'Sin nombre en tarjeta'
+  const [confirmed, setConfirmed] = useState(() => readLocalConfirm(tarjeta))
+  const [status, setStatus] = useState(() => {
+    const local = readLocalConfirm(tarjeta)
+    return local ? confirmedStatusMessage(local) : ''
+  })
+  const [saving, setSaving] = useState(false)
+  const [checking, setChecking] = useState(!readLocalConfirm(tarjeta))
+  const locked = Boolean(confirmed) || saving || checking
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadExisting() {
+      try {
+        const row = await getConfirmacionByTarjeta(tarjeta)
+        if (cancelled) return
+        if (row?.estado === 'si' || row?.estado === 'no') {
+          writeLocalConfirm(tarjeta, row.estado)
+          setConfirmed(row.estado)
+          setStatus(confirmedStatusMessage(row.estado))
+        } else {
+          // Si en registro quedó pendiente o se borró, se puede confirmar de nuevo
+          clearLocalConfirm(tarjeta)
+          setConfirmed(null)
+          setStatus('')
+        }
+      } catch {
+        /* sin red: se usa el candado local si existe */
+      } finally {
+        if (!cancelled) setChecking(false)
+      }
+    }
+
+    loadExisting()
+    return () => {
+      cancelled = true
+    }
+  }, [tarjeta])
 
   async function openWhatsApp(attending) {
+    if (confirmed || saving) return
+
     setSaving(true)
     setStatus('Guardando confirmación…')
+    const estado = attending ? 'si' : 'no'
 
     try {
       await saveConfirmacion({
         tarjeta,
         pases: invite.pases,
-        estado: attending ? 'si' : 'no',
+        estado,
       })
+      writeLocalConfirm(tarjeta, estado)
+      setConfirmed(estado)
       setStatus(
         attending
           ? 'Confirmación registrada. Abriendo WhatsApp…'
           : 'Respuesta registrada. Abriendo WhatsApp…',
       )
-    } catch {
+    } catch (error) {
+      const already =
+        error?.code === 'ALREADY_CONFIRMED' ||
+        /ya tiene una confirmación/i.test(String(error?.message || ''))
+      if (already) {
+        const prev = error.row?.estado === 'no' ? 'no' : error.row?.estado === 'si' ? 'si' : 'si'
+        writeLocalConfirm(tarjeta, prev)
+        setConfirmed(prev)
+        setStatus(confirmedStatusMessage(prev))
+        setSaving(false)
+        return
+      }
       setStatus('No se pudo guardar en la tabla, pero puedes confirmar por WhatsApp.')
     }
 
@@ -103,26 +192,46 @@ function ConfirmBlock({ invite }) {
 
   return (
     <div className="confirm">
-      <div className="confirm__text">
-        <p>
-          Confirma tu asistencia antes del <strong>martes 17 de noviembre</strong> para reservar tus
-          cupos. Después de esta fecha, no podremos asegurarlos.
-        </p>
-      </div>
-      {status ? <p className="confirm__status">{status}</p> : null}
-      <div className="confirm__actions">
-        <button type="button" className="btn" disabled={saving} onClick={() => openWhatsApp(true)}>
-          Sí, ahí estaré
-        </button>
-        <button
-          type="button"
-          className="btn btn--ghost"
-          disabled={saving}
-          onClick={() => openWhatsApp(false)}
-        >
-          No podré ir
-        </button>
-      </div>
+      {confirmed ? (
+        <div className="confirm__text">
+          <p className="confirm__status confirm__status--done" role="status">
+            {confirmedStatusMessage(confirmed)}
+          </p>
+          <p>
+            Respuesta guardada:{' '}
+            <strong>{confirmed === 'si' ? 'Sí, asistiré' : 'No podré asistir'}</strong>
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="confirm__text">
+            <p>
+              Confirma tu asistencia antes del <strong>martes 17 de noviembre</strong> para
+              reservar tus cupos. Después de esta fecha, no podremos asegurarlos. Solo puedes
+              confirmar una vez.
+            </p>
+          </div>
+          {status ? <p className="confirm__status">{status}</p> : null}
+          <div className="confirm__actions">
+            <button
+              type="button"
+              className="btn"
+              disabled={locked}
+              onClick={() => openWhatsApp(true)}
+            >
+              Sí, ahí estaré
+            </button>
+            <button
+              type="button"
+              className="btn btn--ghost"
+              disabled={locked}
+              onClick={() => openWhatsApp(false)}
+            >
+              No podré ir
+            </button>
+          </div>
+        </>
+      )}
     </div>
   )
 }

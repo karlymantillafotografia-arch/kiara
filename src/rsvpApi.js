@@ -36,13 +36,21 @@ const GUEST_COLUMNS =
 async function findGuestByName(tarjeta) {
   const { data, error } = await supabase
     .from('guests')
-    .select('id, name, notes, invite_url')
+    .select('id, name, notes, invite_url, status, passes, created_at, updated_at, responded_at')
     .limit(500)
 
   if (error) throw new Error(supabaseError(error, 'No se pudo buscar la tarjeta'))
 
   const needle = tarjeta.toLowerCase()
   return (data || []).find((row) => String(row.name).toLowerCase() === needle) || null
+}
+
+export async function getConfirmacionByTarjeta(tarjeta) {
+  assertConfigured()
+  const name = String(tarjeta || '').trim()
+  if (!name) return null
+  const row = await findGuestByName(name)
+  return row ? mapGuestRow(row) : null
 }
 
 export async function fetchConfirmaciones() {
@@ -71,6 +79,18 @@ export async function saveConfirmacion(entry) {
   const now = new Date().toISOString()
 
   const existing = await findGuestByName(tarjeta)
+
+  // Una sola respuesta Sí/No por invitación (no se puede cambiar desde el enlace)
+  if (
+    existing &&
+    ['si', 'no'].includes(String(existing.status)) &&
+    ['si', 'no'].includes(estado)
+  ) {
+    const err = new Error('Esta invitación ya tiene una confirmación registrada')
+    err.code = 'ALREADY_CONFIRMED'
+    err.row = mapGuestRow(existing)
+    throw err
+  }
 
   const payload = {
     name: tarjeta,
