@@ -52,7 +52,7 @@ export function getInviteFromUrl(search = window.location.search) {
 }
 
 export function passesLabel(count) {
-  return count === 1 ? '1 pase' : `${count} pases`
+  return count === 1 ? '1 cupo' : `${count} cupos`
 }
 
 export function mapsEmbedUrl() {
@@ -75,13 +75,13 @@ export function mapsOpenUrl() {
 
 export function whatsappConfirmUrl({ attending, para, pases }) {
   const tarjeta = (para || '').trim() || 'Sin nombre en tarjeta'
-  const pasesTxt = `${pases} ${pases === 1 ? 'pase' : 'pases'}`
+  const cuposTxt = `${pases} ${pases === 1 ? 'cupo' : 'cupos'}`
   const answer = attending
     ? [
         '✅ Confirmación XV de Kiara',
         '',
         `Tarjeta: ${tarjeta}`,
-        `Pases: ${pasesTxt}`,
+        `Cupos: ${cuposTxt}`,
         'Respuesta: Sí, asistiré',
         '',
         '¡Ahí estaremos!',
@@ -90,7 +90,7 @@ export function whatsappConfirmUrl({ attending, para, pases }) {
         'Confirmación XV de Kiara',
         '',
         `Tarjeta: ${tarjeta}`,
-        `Pases: ${pasesTxt}`,
+        `Cupos: ${cuposTxt}`,
         'Respuesta: No podré asistir',
       ].join('\n')
 

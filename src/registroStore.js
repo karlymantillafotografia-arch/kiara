@@ -32,7 +32,7 @@ export function lockRegistro() {
 }
 
 export function exportRegistrosCsv(rows) {
-  const header = ['Tarjeta', 'Pases', 'Confirmacion', 'Fecha', 'Notas']
+  const header = ['Tarjeta', 'Cupos', 'Confirmacion', 'Fecha', 'Notas']
   const estadoLabel = { si: 'Si', no: 'No', pendiente: 'Pendiente' }
   const lines = [
     header.join(','),

@@ -287,7 +287,7 @@ export default function Registro() {
             <strong>QR:</strong> se descarga el PNG para imprimir o pegar.
           </li>
           <li>
-            <strong>Tarjeta física:</strong> se descarga el PDF con el diseño fijo (nombre, pases y
+            <strong>Tarjeta física:</strong> se descarga el PDF con el diseño fijo (nombre, cupos y
             QR del invitado).
           </li>
           <li>
@@ -337,7 +337,7 @@ export default function Registro() {
           title="Ver tarjetas que confirmaron sí"
         >
           <strong>{totals.pasesSi}</strong>
-          <span>Pases sí</span>
+          <span>Cupos sí</span>
         </button>
       </section>
       <p className="registro__filter-label">
@@ -363,7 +363,7 @@ export default function Registro() {
             />
           </label>
           <label>
-            Pases
+            Cupos
             <input
               type="number"
               min="1"
@@ -395,7 +395,7 @@ export default function Registro() {
           <thead>
             <tr>
               <th>Tarjeta</th>
-              <th>Pases</th>
+              <th>Cupos</th>
               <th>Confirmación</th>
               <th>QR (físico)</th>
               <th>Enlace</th>
@@ -431,7 +431,7 @@ export default function Registro() {
                       <strong>{row.tarjeta}</strong>
                       {row.notas ? <div className="registro__note-line">{row.notas}</div> : null}
                     </td>
-                    <td data-label="Pases">{row.pases}</td>
+                    <td data-label="Cupos">{row.pases}</td>
                     <td data-label="Confirmación">
                       <span className={`registro__badge registro__badge--${row.estado}`}>
                         {row.estado === 'si' ? 'Sí' : row.estado === 'no' ? 'No' : 'Pendiente'}

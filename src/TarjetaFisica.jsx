@@ -102,7 +102,7 @@ export default function TarjetaFisica({ rows }) {
       <div className="phys__intro no-print">
         <h2>Forma de la tarjeta</h2>
         <p>
-          Diseño fijo: panel 1 nombre/pases; panel 2 textos; panel 3 QR. Sin líneas de recorte.
+          Diseño fijo: panel 1 nombre/cupos; panel 2 textos; panel 3 QR. Sin líneas de recorte.
         </p>
       </div>
 
@@ -183,7 +183,7 @@ export default function TarjetaFisica({ rows }) {
                   ) : (
                     rows.map((row) => (
                       <option key={row.id} value={row.id}>
-                        {row.tarjeta} · {row.pases} pases
+                        {row.tarjeta} · {row.pases} cupos
                       </option>
                     ))
                   )}
@@ -290,7 +290,7 @@ function GuestPanel({ guest }) {
       >
         <strong>{guest.tarjeta}</strong>
         <span>
-          {guest.pases} {guest.pases === 1 ? 'PASE' : 'PASES'}
+          {guest.pases} {guest.pases === 1 ? 'CUPO' : 'CUPOS'}
         </span>
       </div>
     </aside>

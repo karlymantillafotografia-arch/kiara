@@ -106,7 +106,7 @@ function ConfirmBlock({ invite }) {
       <div className="confirm__text">
         <p>
           Confirma tu asistencia antes del <strong>martes 17 de noviembre</strong> para reservar tus
-          pases. Después de esta fecha, no podremos asegurarlos.
+          cupos. Después de esta fecha, no podremos asegurarlos.
         </p>
       </div>
       {status ? <p className="confirm__status">{status}</p> : null}
@@ -268,7 +268,7 @@ export default function App() {
                 ))}
               </div>
               <h2 className="passes__title">
-                ({invite.pases}) {invite.pases === 1 ? 'pase' : 'pases'} en su honor
+                ({invite.pases}) {invite.pases === 1 ? 'cupo' : 'cupos'} en su honor
               </h2>
               <div className="passes__family">
                 <p className="passes__family-label">Invitados</p>

@@ -7,7 +7,7 @@ const LEGACY_KEYS = [
   'xv-kiara-card-design-v1',
 ]
 
-/** Posición fija del panel 1 (fotos + nombre/pases). No cambiar sin pedirlo. */
+/** Posición fija del panel 1 (fotos + nombre/cupos). No cambiar sin pedirlo. */
 export const FIXED_PHOTO_LAYOUT = [
   { id: 'p1', src: '/card-photo-1.jpg', x: 0.05, y: 0.15, w: 3.35, h: 3.45, rotate: -9, z: 1 },
   { id: 'p2', src: '/card-photo-2.jpg', x: 3.55, y: 1.85, w: 3.35, h: 3.45, rotate: 8, z: 2 },
