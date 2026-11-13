@@ -7,9 +7,13 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "db:migrate": "cd api && .venv\\Scripts\\alembic upgrade head",
+    "db:revision": "cd api && .venv\\Scripts\\alembic revision --autogenerate",
+    "db:api": "cd api && .venv\\Scripts\\python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.119.0",
     "framer-motion": "^14.13.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",

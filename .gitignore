@@ -15,6 +15,10 @@ dist-ssr
 .env.*
 !.env.example
 data/confirmaciones.json
+api/.venv/
+api/**/__pycache__/
+api/**/*.pyc
+*.py[cod]
 
 # Editor directories and files
 .vscode/*
