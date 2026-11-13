@@ -7,6 +7,8 @@ import {
   mapsOpenUrl,
   whatsappConfirmUrl,
 } from './invite'
+import Registro from './Registro.jsx'
+import { saveConfirmacion } from './rsvpApi'
 import './App.css'
 
 function getRemaining(now) {
@@ -64,13 +66,43 @@ function PoolScene() {
 }
 
 function ConfirmBlock({ invite }) {
-  function openWhatsApp(attending) {
+  const [tarjeta, setTarjeta] = useState(invite.para || '')
+  const [nameError, setNameError] = useState('')
+  const [status, setStatus] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  async function openWhatsApp(attending) {
+    const nombre = tarjeta.trim()
+    if (!nombre) {
+      setNameError('Escribe el nombre de la tarjeta para confirmar')
+      return
+    }
+    setNameError('')
+    setSaving(true)
+    setStatus('Guardando confirmación…')
+
+    try {
+      await saveConfirmacion({
+        tarjeta: nombre,
+        pases: invite.pases,
+        estado: attending ? 'si' : 'no',
+      })
+      setStatus(
+        attending
+          ? 'Confirmación registrada. Abriendo WhatsApp…'
+          : 'Respuesta registrada. Abriendo WhatsApp…',
+      )
+    } catch {
+      setStatus('No se pudo guardar en la tabla, pero puedes confirmar por WhatsApp.')
+    }
+
     const url = whatsappConfirmUrl({
       attending,
-      para: invite.para,
+      para: nombre,
       pases: invite.pases,
     })
     window.open(url, '_blank', 'noopener,noreferrer')
+    setSaving(false)
   }
 
   return (
@@ -81,11 +113,29 @@ function ConfirmBlock({ invite }) {
           pases. Después de esta fecha, no podremos asegurarlos.
         </p>
       </div>
+      <label className="confirm__card-name">
+        Nombre de la tarjeta
+        <input
+          type="text"
+          value={tarjeta}
+          onChange={(event) => setTarjeta(event.target.value)}
+          placeholder="Ej. Familia Morales"
+          autoComplete="name"
+          disabled={saving}
+        />
+      </label>
+      {nameError ? <p className="confirm__error">{nameError}</p> : null}
+      {status ? <p className="confirm__status">{status}</p> : null}
       <div className="confirm__actions">
-        <button type="button" className="btn" onClick={() => openWhatsApp(true)}>
+        <button type="button" className="btn" disabled={saving} onClick={() => openWhatsApp(true)}>
           Sí, ahí estaré
         </button>
-        <button type="button" className="btn btn--ghost" onClick={() => openWhatsApp(false)}>
+        <button
+          type="button"
+          className="btn btn--ghost"
+          disabled={saving}
+          onClick={() => openWhatsApp(false)}
+        >
           No podré ir
         </button>
       </div>
@@ -104,6 +154,10 @@ const fadeUp = {
 
 export default function App() {
   const invite = useMemo(() => getInviteFromUrl(), [])
+  const isRegistro = useMemo(() => {
+    const params = new URLSearchParams(window.location.search)
+    return params.get('registro') === '1' || window.location.hash === '#registro'
+  }, [])
   const [opened, setOpened] = useState(false)
 
   function openInvitation() {
@@ -111,76 +165,59 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  if (isRegistro) {
+    return <Registro />
+  }
+
   return (
     <div className={`app ${opened ? 'app--opened' : 'app--cover'}`}>
+      {opened ? (
+        <div className="page-scape" aria-hidden="true">
+          <span className="page-scape__wash" />
+          <span className="page-scape__orb page-scape__orb--blue" />
+          <span className="page-scape__orb page-scape__orb--wine" />
+          <span className="page-scape__orb page-scape__orb--mist" />
+          <span className="page-scape__curve page-scape__curve--tl" />
+          <span className="page-scape__curve page-scape__curve--br" />
+          <span className="page-scape__spark page-scape__spark--1">✦</span>
+          <span className="page-scape__spark page-scape__spark--2">✦</span>
+          <span className="page-scape__spark page-scape__spark--3">✦</span>
+          <span className="page-scape__spark page-scape__spark--4">✦</span>
+        </div>
+      ) : null}
+
       <AnimatePresence mode="wait">
         {!opened ? (
           <motion.section
             key="cover"
-            className="cover"
+            className="cover cover--scene"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, y: -12, filter: 'blur(8px)' }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="cover__bg" aria-hidden="true">
-              <span className="cover__glow" />
-              <span className="cover__fold cover__fold--tl" />
-              <span className="cover__fold cover__fold--br" />
-              <span className="cover__fold cover__fold--blue" />
-            </div>
+            <img
+              className="cover__scene"
+              src="/cover-scene.jpg"
+              alt=""
+              aria-hidden="true"
+            />
 
-            <div className="cover__content">
-              <p className="cover__eyebrow">Mis XV años</p>
-              <h1 className="cover__title">
-                Kiara
-                <span>Karyn Jhordana</span>
-              </h1>
-              <div className="cover__rule" aria-hidden="true">
-                <i />
-                <em>✦</em>
-                <i />
-              </div>
+            <div className="cover__content cover__content--scene">
+              {invite.para ? (
+                <p className="cover__guest">
+                  Para <strong>{invite.para}</strong>
+                </p>
+              ) : null}
 
               <button
                 type="button"
-                className="cover-envelope"
+                className="cover-seal"
                 onClick={openInvitation}
-                aria-label="Toca el sobre para abrir la invitación"
+                aria-label="Toca el sello para abrir la invitación"
               >
-                <span className="cover-envelope__shade" />
-                <span className="cover-envelope__back" />
-                <span className="cover-envelope__liner" />
-                <span className="cover-envelope__pocket">
-                  {invite.para ? (
-                    <span className="cover-envelope__guest">
-                      Para <strong>{invite.para}</strong>
-                    </span>
-                  ) : null}
-                </span>
-                <span className="cover-envelope__wing cover-envelope__wing--l" />
-                <span className="cover-envelope__wing cover-envelope__wing--r" />
-                <span className="cover-envelope__flap" />
-                <span className="cover-envelope__spark cover-envelope__spark--1">✦</span>
-                <span className="cover-envelope__spark cover-envelope__spark--2">✦</span>
-                <span className="cover-envelope__spark cover-envelope__spark--3">✦</span>
-                <span className="cover-envelope__spark cover-envelope__spark--4">✦</span>
-                <span className="cover-envelope__seal">
-                  <span className="cover-envelope__seal-ring" />
-                  <span className="cover-envelope__seal-glow" />
-                  <span className="cover-envelope__seal-mark">
-                    <i>✦</i>
-                    <b>{EVENT.monogram}</b>
-                    <i>✦</i>
-                  </span>
-                </span>
+                <img src="/seal-km.png" alt="" />
               </button>
-
-              <p className="cover__cta">
-                <span />
-                Toca el sobre para abrir
-                <span />
-              </p>
             </div>
           </motion.section>
         ) : (
@@ -285,6 +322,20 @@ export default function App() {
                     Habrá piscina: no olvides traer <strong>ropa de baño</strong>, toalla y algo
                     cómodo para después.
                   </p>
+                </div>
+              </div>
+
+              <div className="gift" aria-label="Lluvia de sobres">
+                <img
+                  className="gift__bg"
+                  src="/lluvia-sobres.gif"
+                  alt=""
+                  aria-hidden="true"
+                />
+                <div className="gift__frame" aria-hidden="true" />
+                <div className="gift__copy">
+                  <span className="gift__mark">✦</span>
+                  <p className="gift__label">Lluvia de sobres</p>
                 </div>
               </div>
             </motion.section>

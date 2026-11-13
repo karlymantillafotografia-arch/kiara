@@ -76,10 +76,25 @@ export function mapsOpenUrl() {
 }
 
 export function whatsappConfirmUrl({ attending, para, pases }) {
-  const guest = para || 'un invitado'
+  const tarjeta = (para || '').trim() || 'Sin nombre en tarjeta'
+  const pasesTxt = `${pases} ${pases === 1 ? 'pase' : 'pases'}`
   const answer = attending
-    ? `¡Hola! Confirmo asistencia a los XV de Kiara. Soy ${guest}, con ${pases} ${pases === 1 ? 'pase' : 'pases'}. ¡Ahí estaremos!`
-    : `¡Hola! Soy ${guest}. Lamento no poder acompañarlos en los XV de Kiara.`
+    ? [
+        '✅ Confirmación XV de Kiara',
+        '',
+        `Tarjeta: ${tarjeta}`,
+        `Pases: ${pasesTxt}`,
+        'Respuesta: Sí, asistiré',
+        '',
+        '¡Ahí estaremos!',
+      ].join('\n')
+    : [
+        'Confirmación XV de Kiara',
+        '',
+        `Tarjeta: ${tarjeta}`,
+        `Pases: ${pasesTxt}`,
+        'Respuesta: No podré asistir',
+      ].join('\n')
 
   const text = encodeURIComponent(answer)
   if (RSVP_WHATSAPP) {
