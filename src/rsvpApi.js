@@ -10,7 +10,7 @@ import { isSupabaseConfigured, supabase } from './supabaseClient'
 function assertConfigured() {
   if (!isSupabaseConfigured()) {
     throw new Error(
-      'Falta configurar VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY en .env',
+      'Falta configurar VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY en Vercel / .env',
     )
   }
 }

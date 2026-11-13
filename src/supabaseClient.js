@@ -1,17 +1,15 @@
 import { createClient } from '@supabase/supabase-js'
+import { ENV, hasSupabaseEnv } from './env'
 
-const url = (import.meta.env.VITE_SUPABASE_URL || '').trim()
-const anonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim()
-
-if (!url || !anonKey) {
+if (!hasSupabaseEnv()) {
   console.warn(
-    '[supabase] Falta VITE_SUPABASE_URL o VITE_SUPABASE_ANON_KEY en .env',
+    '[supabase] Falta VITE_SUPABASE_URL o VITE_SUPABASE_ANON_KEY (Vercel / .env)',
   )
 }
 
 export const supabase = createClient(
-  url || 'https://example.supabase.co',
-  anonKey || 'public-anon-key',
+  ENV.supabaseUrl || 'https://example.supabase.co',
+  ENV.supabaseAnonKey || 'public-anon-key',
   {
     auth: {
       persistSession: false,
@@ -21,5 +19,5 @@ export const supabase = createClient(
 )
 
 export function isSupabaseConfigured() {
-  return Boolean(url && anonKey)
+  return hasSupabaseEnv()
 }

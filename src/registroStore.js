@@ -1,6 +1,9 @@
+import { ENV } from './env'
+
 const PIN_KEY = 'xv-kiara-registro-ok'
 
-export const REGISTRO_PIN = (import.meta.env.VITE_REGISTRO_PIN || 'kiara15').trim()
+/** PIN del registro privado (?registro=1). */
+export const REGISTRO_PIN = 'kiara15'
 
 export function isRegistroUnlocked() {
   try {
@@ -65,7 +68,7 @@ export function formatFecha(iso) {
 
 /** Link personalizado de la tarjeta (WhatsApp / QR físico). */
 export function buildInviteUrl(tarjeta, pases = 2) {
-  const publicBase = (import.meta.env.VITE_PUBLIC_INVITE_URL || '').trim()
+  const publicBase = ENV.publicInviteUrl
   const base = publicBase || window.location.href
   const url = new URL(base)
   url.search = ''

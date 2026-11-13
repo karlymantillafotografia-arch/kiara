@@ -4,9 +4,7 @@ export const DEFAULT_GUEST = ''
 const MAX_PASSES = 12
 
 /** WhatsApp donde llegan las confirmaciones. Solo dígitos, con código de país. */
-export const RSVP_WHATSAPP = (
-  import.meta.env.VITE_WHATSAPP || '573118523499'
-).replace(/\D/g, '')
+export const RSVP_WHATSAPP = '573118523499'
 
 export const EVENT = {
   name: 'Kiara Karyn Jhordana Mantilla Gómez',

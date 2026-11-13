@@ -10,6 +10,7 @@ import {
   lockRegistro,
   unlockRegistro,
 } from './registroStore'
+import { ENV, hasPublicInviteUrl } from './env'
 import { createGuestPack } from './guestPack'
 import { deleteConfirmacion, fetchConfirmaciones, saveConfirmacion } from './rsvpApi'
 
@@ -171,7 +172,7 @@ export default function Registro() {
   }
 
   function publicUrlConfigured() {
-    return Boolean((import.meta.env.VITE_PUBLIC_INVITE_URL || '').trim())
+    return hasPublicInviteUrl()
   }
 
   async function handleDelete(id) {
@@ -302,7 +303,7 @@ export default function Registro() {
         </ol>
         {publicUrlConfigured() ? (
           <p className="registro__ok">
-            Enlace público activo: {import.meta.env.VITE_PUBLIC_INVITE_URL}
+            Enlace público activo: {ENV.publicInviteUrl}
           </p>
         ) : (
           <p className="registro__error">
