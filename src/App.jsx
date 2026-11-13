@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   EVENT,
@@ -10,6 +10,9 @@ import {
 import Registro from './Registro.jsx'
 import { saveConfirmacion } from './rsvpApi'
 import './App.css'
+
+const BG_MUSIC_SRC = '/bg-music.mp3'
+const BG_MUSIC_VOLUME = 0.42
 
 function getRemaining(now) {
   const diff = Math.max(0, EVENT.datetime.getTime() - now.getTime())
@@ -140,13 +143,49 @@ export default function App() {
     return params.get('registro') === '1' || window.location.hash === '#registro'
   }, [])
   const [opened, setOpened] = useState(false)
+  const [musicOn, setMusicOn] = useState(true)
+  const audioRef = useRef(null)
+
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return undefined
+    audio.volume = BG_MUSIC_VOLUME
+    audio.loop = true
+    return () => {
+      audio.pause()
+    }
+  }, [])
+
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio || !opened) return
+    if (musicOn) {
+      audio.play().catch(() => {
+        setMusicOn(false)
+      })
+    } else {
+      audio.pause()
+    }
+  }, [opened, musicOn])
 
   function openInvitation() {
     setOpened(true)
+    setMusicOn(true)
+    const audio = audioRef.current
+    if (audio) {
+      audio.volume = BG_MUSIC_VOLUME
+      audio.play().catch(() => {
+        setMusicOn(false)
+      })
+    }
     // Deja que el layout abierto monte y luego ancla arriba sin pelear con el scroll.
     requestAnimationFrame(() => {
       window.scrollTo({ top: 0, behavior: 'auto' })
     })
+  }
+
+  function toggleMusic() {
+    setMusicOn((current) => !current)
   }
 
   if (isRegistro) {
@@ -155,6 +194,8 @@ export default function App() {
 
   return (
     <div className={`app ${opened ? 'app--opened' : 'app--cover'}`}>
+      <audio ref={audioRef} src={BG_MUSIC_SRC} preload="auto" loop />
+
       {opened ? (
         <div className="page-scape" aria-hidden="true">
           <span className="page-scape__wash" />
@@ -168,6 +209,19 @@ export default function App() {
           <span className="page-scape__spark page-scape__spark--3">✦</span>
           <span className="page-scape__spark page-scape__spark--4">✦</span>
         </div>
+      ) : null}
+
+      {opened ? (
+        <button
+          type="button"
+          className={`music-toggle ${musicOn ? 'is-on' : 'is-off'}`}
+          onClick={toggleMusic}
+          aria-pressed={musicOn}
+          aria-label={musicOn ? 'Silenciar música' : 'Activar música'}
+        >
+          <span aria-hidden="true">{musicOn ? '♪' : '✕'}</span>
+          <span className="music-toggle__text">{musicOn ? 'Música' : 'Silencio'}</span>
+        </button>
       ) : null}
 
       <AnimatePresence mode="wait">
