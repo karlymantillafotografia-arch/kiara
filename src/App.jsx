@@ -2,7 +2,9 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   EVENT,
+  downloadCalendarIcs,
   getInviteFromUrl,
+  googleCalendarUrl,
   mapsEmbedUrl,
   mapsOpenUrl,
   whatsappConfirmUrl,
@@ -193,15 +195,35 @@ function ConfirmBlock({ invite }) {
   return (
     <div className="confirm">
       {confirmed ? (
-        <div className="confirm__text">
-          <p className="confirm__status confirm__status--done" role="status">
-            {confirmedStatusMessage(confirmed)}
-          </p>
-          <p>
-            Respuesta guardada:{' '}
-            <strong>{confirmed === 'si' ? 'Sí, asistiré' : 'No podré asistir'}</strong>
-          </p>
-        </div>
+        <>
+          <div className="confirm__text">
+            <p className="confirm__status confirm__status--done" role="status">
+              {confirmedStatusMessage(confirmed)}
+            </p>
+            <p>
+              Respuesta guardada:{' '}
+              <strong>{confirmed === 'si' ? 'Sí, asistiré' : 'No podré asistir'}</strong>
+            </p>
+          </div>
+          {confirmed === 'si' ? (
+            <div className="confirm__calendar">
+              <p className="confirm__calendar-label">¿Quieres un recordatorio?</p>
+              <div className="confirm__actions">
+                <a
+                  className="btn"
+                  href={googleCalendarUrl()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Agregar a Google Calendar
+                </a>
+                <button type="button" className="btn btn--ghost" onClick={downloadCalendarIcs}>
+                  Descargar para Apple u otro calendario
+                </button>
+              </div>
+            </div>
+          ) : null}
+        </>
       ) : (
         <>
           <div className="confirm__text">

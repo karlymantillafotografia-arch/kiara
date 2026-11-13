@@ -100,3 +100,85 @@ export function whatsappConfirmUrl({ attending, para, pases }) {
   }
   return `https://wa.me/?text=${text}`
 }
+
+function toCalendarStamp(date) {
+  return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
+}
+
+/** Datos del evento para recordatorio / calendario (inicio 6 p.m., fin 11 p.m.). */
+export function getCalendarEvent() {
+  const start = new Date(EVENT.datetime)
+  const end = new Date(start.getTime() + 5 * 60 * 60 * 1000)
+  const title = `XV de ${EVENT.shortName}`
+  const location = EVENT.venue
+  const details = [
+    `Celebración de los XV años de ${EVENT.name}.`,
+    `${EVENT.dateLong} · ${EVENT.timeLabel}`,
+    EVENT.venue,
+    mapsOpenUrl(),
+  ].join('\n')
+
+  return { start, end, title, location, details }
+}
+
+export function googleCalendarUrl() {
+  const { start, end, title, location, details } = getCalendarEvent()
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: title,
+    dates: `${toCalendarStamp(start)}/${toCalendarStamp(end)}`,
+    details,
+    location,
+  })
+  return `https://calendar.google.com/calendar/render?${params.toString()}`
+}
+
+/** Descarga un .ics (Apple Calendar, Outlook y la mayoría de calendarios). */
+export function downloadCalendarIcs() {
+  const { start, end, title, location, details } = getCalendarEvent()
+  const stamp = toCalendarStamp(new Date())
+  const escapeIcs = (value) =>
+    String(value)
+      .replace(/\\/g, '\\\\')
+      .replace(/\n/g, '\\n')
+      .replace(/,/g, '\\,')
+      .replace(/;/g, '\\;')
+
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//XV Kiara//Invitacion//ES',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    `UID:xv-kiara-${toCalendarStamp(start)}@kiara`,
+    `DTSTAMP:${stamp}`,
+    `DTSTART:${toCalendarStamp(start)}`,
+    `DTEND:${toCalendarStamp(end)}`,
+    `SUMMARY:${escapeIcs(title)}`,
+    `DESCRIPTION:${escapeIcs(details)}`,
+    `LOCATION:${escapeIcs(location)}`,
+    'BEGIN:VALARM',
+    'TRIGGER:-PT24H',
+    'ACTION:DISPLAY',
+    `DESCRIPTION:${escapeIcs(`Recordatorio: ${title}`)}`,
+    'END:VALARM',
+    'BEGIN:VALARM',
+    'TRIGGER:-PT2H',
+    'ACTION:DISPLAY',
+    `DESCRIPTION:${escapeIcs(`Recordatorio: ${title}`)}`,
+    'END:VALARM',
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n')
+
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'xv-kiara.ics'
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+}

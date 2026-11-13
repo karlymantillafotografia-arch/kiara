@@ -856,6 +856,24 @@
   gap: 0.55rem;
 }
 
+.confirm__calendar {
+  margin-top: 0.85rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.confirm__calendar-label {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.05rem;
+  color: var(--ink-soft);
+}
+
+.confirm__actions a.btn {
+  text-decoration: none;
+  text-align: center;
+}
+
 .footer {
   margin: 0.35rem auto 0;
   width: fit-content;
