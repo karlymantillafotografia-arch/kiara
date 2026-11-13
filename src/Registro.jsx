@@ -26,6 +26,12 @@ const EMPTY_FORM = {
   estado: 'pendiente',
 }
 
+function parseCupos(value) {
+  const n = Number(value)
+  if (!Number.isFinite(n) || n < 1) return null
+  return Math.min(12, Math.floor(n))
+}
+
 export default function Registro() {
   const [unlocked, setUnlocked] = useState(() => isRegistroUnlocked())
   const [pin, setPin] = useState('')
@@ -139,12 +145,19 @@ export default function Registro() {
       return
     }
 
-    const pases = form.pases
+    const pases = parseCupos(form.pases)
+    if (pases == null) {
+      setError('Los cupos deben ser un número entre 1 y 12')
+      setOkMsg('')
+      return
+    }
+
     const notas = form.notas
     const estado = form.estado || 'pendiente'
 
     try {
       setCreating(true)
+      setForm((current) => ({ ...current, pases }))
 
       if (isEditing) {
         const link = buildInviteUrl(tarjeta, pases)
@@ -454,8 +467,24 @@ export default function Registro() {
               type="number"
               min="1"
               max="12"
-              value={form.pases}
-              onChange={(event) => setForm({ ...form, pases: Number(event.target.value) || 1 })}
+              inputMode="numeric"
+              value={form.pases === '' || form.pases == null ? '' : form.pases}
+              onChange={(event) => {
+                const raw = event.target.value
+                if (raw === '') {
+                  setForm({ ...form, pases: '' })
+                  return
+                }
+                const digits = raw.replace(/[^\d]/g, '')
+                setForm({ ...form, pases: digits === '' ? '' : Number(digits) })
+              }}
+              onBlur={() => {
+                const parsed = parseCupos(form.pases)
+                setForm((current) => ({
+                  ...current,
+                  pases: parsed == null ? '' : parsed,
+                }))
+              }}
               disabled={creating}
             />
           </label>
