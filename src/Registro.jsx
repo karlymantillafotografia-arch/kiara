@@ -12,12 +12,18 @@ import {
 } from './registroStore'
 import { ENV } from './env'
 import { createGuestPack } from './guestPack'
-import { deleteConfirmacion, fetchConfirmaciones, saveConfirmacion } from './rsvpApi'
+import {
+  deleteConfirmacion,
+  fetchConfirmaciones,
+  saveConfirmacion,
+  updateConfirmacion,
+} from './rsvpApi'
 
 const EMPTY_FORM = {
   tarjeta: '',
   pases: 2,
   notas: '',
+  estado: 'pendiente',
 }
 
 export default function Registro() {
@@ -28,11 +34,14 @@ export default function Registro() {
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
   const [form, setForm] = useState(EMPTY_FORM)
+  const [editingId, setEditingId] = useState('')
+  const [editingOriginal, setEditingOriginal] = useState(null)
   const [copiedId, setCopiedId] = useState('')
   const [packBusyId, setPackBusyId] = useState('')
   const [creating, setCreating] = useState(false)
   const [filter, setFilter] = useState('todas') // todas | si | no | pendiente
   const [tab, setTab] = useState('lista') // lista | diseno
+  const isEditing = Boolean(editingId)
 
   const totals = useMemo(() => {
     const si = rows.filter((row) => row.estado === 'si')
@@ -94,6 +103,33 @@ export default function Registro() {
     setUnlocked(true)
   }
 
+  function startEdit(row) {
+    setEditingId(row.id)
+    setEditingOriginal({
+      tarjeta: row.tarjeta,
+      pases: row.pases,
+      notas: row.notas || '',
+      estado: row.estado || 'pendiente',
+    })
+    setForm({
+      tarjeta: row.tarjeta,
+      pases: row.pases,
+      notas: row.notas || '',
+      estado: row.estado || 'pendiente',
+    })
+    setError('')
+    setOkMsg(`Editando: ${row.tarjeta}`)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  function cancelEdit() {
+    setEditingId('')
+    setEditingOriginal(null)
+    setForm(EMPTY_FORM)
+    setError('')
+    setOkMsg('')
+  }
+
   async function handleCreateCard(event) {
     event.preventDefault()
     const tarjeta = form.tarjeta.trim()
@@ -105,9 +141,52 @@ export default function Registro() {
 
     const pases = form.pases
     const notas = form.notas
+    const estado = form.estado || 'pendiente'
 
     try {
       setCreating(true)
+
+      if (isEditing) {
+        const link = buildInviteUrl(tarjeta, pases)
+        const data = await updateConfirmacion(editingId, {
+          tarjeta,
+          pases,
+          notas,
+          estado,
+          link,
+        })
+        setRows(data.rows || [])
+        setError('')
+
+        const nameChanged =
+          editingOriginal &&
+          editingOriginal.tarjeta.trim().toLowerCase() !== tarjeta.toLowerCase()
+        const pasesChanged = editingOriginal && Number(editingOriginal.pases) !== Number(pases)
+        const needsPack = nameChanged || pasesChanged
+
+        if (needsPack) {
+          const regen = window.confirm(
+            'Cambiaste el nombre o los cupos. ¿Regenerar QR y PDF con los datos nuevos?',
+          )
+          if (regen) {
+            setOkMsg(`Actualizando QR y PDF de ${tarjeta}…`)
+            await createGuestPack(tarjeta, pases)
+            setOkMsg(`Tarjeta actualizada y QR + PDF regenerados (${tarjeta})`)
+          } else {
+            setOkMsg(
+              `Tarjeta actualizada (${tarjeta}). Si ya imprimiste el QR, regenera el paquete desde la tabla.`,
+            )
+          }
+        } else {
+          setOkMsg(`Tarjeta actualizada (${tarjeta})`)
+        }
+
+        setEditingId('')
+        setEditingOriginal(null)
+        setForm(EMPTY_FORM)
+        return
+      }
+
       const link = buildInviteUrl(tarjeta, pases)
       const shareText = inviteWhatsAppShareText(tarjeta, pases)
       const data = await saveConfirmacion({
@@ -130,7 +209,7 @@ export default function Registro() {
           : `QR y PDF listos para ${tarjeta}. Copia el enlace desde la tabla.`,
       )
     } catch (err) {
-      setError(err.message || 'No se pudo crear la tarjeta')
+      setError(err.message || (isEditing ? 'No se pudo actualizar la tarjeta' : 'No se pudo crear la tarjeta'))
       setOkMsg('')
     } finally {
       setCreating(false)
@@ -174,6 +253,7 @@ export default function Registro() {
     try {
       const data = await deleteConfirmacion(id)
       setRows(data.rows || [])
+      if (editingId === id) cancelEdit()
     } catch (err) {
       setError(err.message || 'No se pudo eliminar')
     }
@@ -350,7 +430,13 @@ export default function Registro() {
       </p>
 
       <form className="registro__form" onSubmit={handleCreateCard}>
-        <h2>Crear tarjeta (QR + digital + física)</h2>
+        <h2>{isEditing ? 'Editar tarjeta' : 'Crear tarjeta (QR + digital + física)'}</h2>
+        {isEditing ? (
+          <p className="registro__hint">
+            Corrige el nombre, cupos, notas o confirmación. Si cambias nombre o cupos, puedes
+            regenerar el QR y el PDF.
+          </p>
+        ) : null}
         <div className="registro__fields">
           <label>
             Nombre de la tarjeta
@@ -373,6 +459,20 @@ export default function Registro() {
               disabled={creating}
             />
           </label>
+          {isEditing ? (
+            <label>
+              Confirmación
+              <select
+                value={form.estado}
+                onChange={(event) => setForm({ ...form, estado: event.target.value })}
+                disabled={creating}
+              >
+                <option value="pendiente">Pendiente</option>
+                <option value="si">Sí</option>
+                <option value="no">No</option>
+              </select>
+            </label>
+          ) : null}
           <label className="registro__notes">
             Notas
             <input
@@ -385,9 +485,27 @@ export default function Registro() {
         </div>
         {error ? <p className="registro__error">{error}</p> : null}
         {okMsg ? <p className="registro__ok">{okMsg}</p> : null}
-        <button type="submit" className="btn" disabled={creating}>
-          {creating ? 'Generando QR y PDF…' : 'Crear tarjeta (QR + digital + física)'}
-        </button>
+        <div className="registro__form-actions">
+          <button type="submit" className="btn" disabled={creating}>
+            {creating
+              ? isEditing
+                ? 'Guardando…'
+                : 'Generando QR y PDF…'
+              : isEditing
+                ? 'Guardar cambios'
+                : 'Crear tarjeta (QR + digital + física)'}
+          </button>
+          {isEditing ? (
+            <button
+              type="button"
+              className="btn btn--ghost"
+              disabled={creating}
+              onClick={cancelEdit}
+            >
+              Cancelar
+            </button>
+          ) : null}
+        </div>
       </form>
 
       <div className="registro__table-wrap">
@@ -460,13 +578,24 @@ export default function Registro() {
                     </td>
                     <td data-label="Fecha">{formatFecha(row.fecha)}</td>
                     <td>
-                      <button
-                        type="button"
-                        className="registro__delete"
-                        onClick={() => handleDelete(row.id)}
-                      >
-                        Eliminar
-                      </button>
+                      <div className="registro__row-actions">
+                        <button
+                          type="button"
+                          className="registro__edit"
+                          onClick={() => startEdit(row)}
+                          disabled={creating || editingId === row.id}
+                        >
+                          {editingId === row.id ? 'Editando…' : 'Editar'}
+                        </button>
+                        <button
+                          type="button"
+                          className="registro__delete"
+                          onClick={() => handleDelete(row.id)}
+                          disabled={creating || editingId === row.id}
+                        >
+                          Eliminar
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 )

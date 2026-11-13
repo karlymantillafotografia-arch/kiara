@@ -130,6 +130,64 @@ export async function saveConfirmacion(entry) {
   return { row: mapGuestRow(row), rows }
 }
 
+/** Actualiza una tarjeta por id (registro). Permite corregir nombre, cupos, notas y estado. */
+export async function updateConfirmacion(id, entry) {
+  assertConfigured()
+  const guestId = String(id || '').trim()
+  if (!guestId) throw new Error('Falta el id de la tarjeta')
+
+  const tarjeta = String(entry.tarjeta || '').trim()
+  if (!tarjeta) throw new Error('Falta el nombre de la tarjeta')
+
+  const pases = Math.min(12, Math.max(1, Number(entry.pases) || 2))
+  const estado = ['si', 'no', 'pendiente'].includes(entry.estado)
+    ? entry.estado
+    : 'pendiente'
+  const notas = entry.notas != null ? String(entry.notas).trim() || null : null
+  const link = entry.link || buildInviteUrl(tarjeta, pases)
+  const now = new Date().toISOString()
+
+  const { data: current, error: currentError } = await supabase
+    .from('guests')
+    .select(GUEST_COLUMNS)
+    .eq('id', guestId)
+    .maybeSingle()
+
+  if (currentError) throw new Error(supabaseError(currentError, 'No se pudo cargar la tarjeta'))
+  if (!current) throw new Error('No se encontró la tarjeta')
+
+  const sameName = await findGuestByName(tarjeta)
+  if (sameName && String(sameName.id) !== guestId) {
+    throw new Error('Ya existe otra tarjeta con ese nombre')
+  }
+
+  let respondedAt = current.responded_at || null
+  if (estado === 'pendiente') respondedAt = null
+  else if (!respondedAt || current.status === 'pendiente') respondedAt = now
+
+  const payload = {
+    name: tarjeta,
+    passes: pases,
+    status: estado,
+    notes: notas,
+    invite_url: link,
+    updated_at: now,
+    responded_at: respondedAt,
+  }
+
+  const { data, error } = await supabase
+    .from('guests')
+    .update(payload)
+    .eq('id', guestId)
+    .select(GUEST_COLUMNS)
+    .single()
+
+  if (error) throw new Error(supabaseError(error, 'No se pudo actualizar la tarjeta'))
+
+  const rows = await fetchConfirmaciones()
+  return { row: mapGuestRow(data), rows }
+}
+
 export async function deleteConfirmacion(id) {
   assertConfigured()
   const { error } = await supabase.from('guests').delete().eq('id', id)

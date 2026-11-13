@@ -1302,7 +1302,19 @@
   margin-top: 0.35rem;
 }
 
+.registro__form-actions {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.registro__row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
 .registro__quick button,
+.registro__edit,
 .registro__delete {
   border: 1px solid rgba(61, 95, 122, 0.2);
   background: #fff;
@@ -1313,6 +1325,12 @@
   text-transform: uppercase;
   padding: 0.28rem 0.4rem;
   cursor: pointer;
+}
+
+.registro__edit:disabled,
+.registro__delete:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .registro__delete {
