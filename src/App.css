@@ -1154,16 +1154,20 @@
 
 .registro__stats {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 0.45rem;
   margin-bottom: 0.55rem;
 }
 
-.registro__stats button {
+.registro__stats button,
+.registro__stat {
   padding: 0.7rem 0.4rem;
   text-align: center;
   background: rgba(255, 255, 255, 0.82);
   border: 1px solid rgba(61, 95, 122, 0.12);
+}
+
+.registro__stats button {
   cursor: pointer;
   transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -1182,14 +1186,16 @@
   box-shadow: 0 0 0 2px rgba(143, 45, 69, 0.12);
 }
 
-.registro__stats strong {
+.registro__stats strong,
+.registro__stat strong {
   display: block;
   font-family: "Cormorant Garamond", serif;
   font-size: 1.45rem;
   color: var(--navy);
 }
 
-.registro__stats span {
+.registro__stats span,
+.registro__stat span {
   font-family: "Libre Baskerville", serif;
   font-size: 0.58rem;
   letter-spacing: 0.1em;

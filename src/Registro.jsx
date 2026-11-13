@@ -58,6 +58,7 @@ export default function Registro() {
       si: si.length,
       no: no.length,
       pendiente: pendiente.length,
+      pasesTotal: rows.reduce((sum, row) => sum + Number(row.pases || 0), 0),
       pasesSi: si.reduce((sum, row) => sum + Number(row.pases || 0), 0),
     }
   }, [rows])
@@ -423,6 +424,10 @@ export default function Registro() {
           <strong>{totals.pendiente}</strong>
           <span>Pendiente</span>
         </button>
+        <div className="registro__stat" title="Total de cupos registrados (confirmados o no)">
+          <strong>{totals.pasesTotal}</strong>
+          <span>Cupos</span>
+        </div>
         <button
           type="button"
           className={filter === 'si' ? 'is-active' : ''}
