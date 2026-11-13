@@ -143,7 +143,10 @@ export default function App() {
 
   function openInvitation() {
     setOpened(true)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    // Deja que el layout abierto monte y luego ancla arriba sin pelear con el scroll.
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: 'auto' })
+    })
   }
 
   if (isRegistro) {
