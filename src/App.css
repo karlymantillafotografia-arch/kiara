@@ -856,16 +856,32 @@
   gap: 0.55rem;
 }
 
-.confirm__calendar {
+.confirm__steps {
   margin-top: 0.85rem;
   display: grid;
-  gap: 0.65rem;
+  gap: 1rem;
 }
 
-.confirm__calendar-label {
+.confirm__step {
+  display: grid;
+  gap: 0.45rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(110, 31, 50, 0.14);
+}
+
+.confirm__step-label {
   margin: 0;
+  font-family: "Libre Baskerville", serif;
+  font-size: clamp(0.62rem, 2.6vw, 0.7rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--wine);
+}
+
+.confirm__step-hint {
+  margin: 0 0 0.2rem;
   font-family: "Cormorant Garamond", serif;
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   color: var(--ink-soft);
 }
 

@@ -148,7 +148,16 @@ function ConfirmBlock({ invite }) {
     }
   }, [tarjeta])
 
-  async function openWhatsApp(attending) {
+  function openWhatsApp(attending) {
+    const url = whatsappConfirmUrl({
+      attending,
+      para: tarjeta,
+      pases: invite.pases,
+    })
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }
+
+  async function submitConfirmacion(attending) {
     if (confirmed || saving) return
 
     setSaving(true)
@@ -165,9 +174,10 @@ function ConfirmBlock({ invite }) {
       setConfirmed(estado)
       setStatus(
         attending
-          ? 'Confirmación registrada. Abriendo WhatsApp…'
+          ? 'Confirmación registrada. Continúa con los pasos de abajo.'
           : 'Respuesta registrada. Abriendo WhatsApp…',
       )
+      if (!attending) openWhatsApp(false)
     } catch (error) {
       const already =
         error?.code === 'ALREADY_CONFIRMED' ||
@@ -180,34 +190,52 @@ function ConfirmBlock({ invite }) {
         setSaving(false)
         return
       }
-      setStatus('No se pudo guardar en la tabla, pero puedes confirmar por WhatsApp.')
+      setStatus(
+        attending
+          ? 'No se pudo guardar en la tabla. Aun así puedes enviar WhatsApp y guardar el recordatorio.'
+          : 'No se pudo guardar en la tabla, pero puedes confirmar por WhatsApp.',
+      )
+      if (!attending) openWhatsApp(false)
+      else {
+        writeLocalConfirm(tarjeta, 'si')
+        setConfirmed('si')
+      }
     }
 
-    const url = whatsappConfirmUrl({
-      attending,
-      para: tarjeta,
-      pases: invite.pases,
-    })
-    window.open(url, '_blank', 'noopener,noreferrer')
     setSaving(false)
   }
 
   return (
     <div className="confirm">
-      {confirmed ? (
+      {confirmed === 'si' ? (
         <>
           <div className="confirm__text">
             <p className="confirm__status confirm__status--done" role="status">
-              {confirmedStatusMessage(confirmed)}
+              {confirmedStatusMessage('si')}
             </p>
             <p>
-              Respuesta guardada:{' '}
-              <strong>{confirmed === 'si' ? 'Sí, asistiré' : 'No podré asistir'}</strong>
+              Respuesta guardada: <strong>Sí, asistiré</strong>
             </p>
           </div>
-          {confirmed === 'si' ? (
-            <div className="confirm__calendar">
-              <p className="confirm__calendar-label">¿Quieres un recordatorio?</p>
+          <div className="confirm__steps">
+            <section className="confirm__step" aria-labelledby="confirm-step-1">
+              <p id="confirm-step-1" className="confirm__step-label">
+                Paso 1 · Enviar confirmación
+              </p>
+              <p className="confirm__step-hint">Avisa por WhatsApp que sí vas a asistir.</p>
+              <div className="confirm__actions">
+                <button type="button" className="btn" onClick={() => openWhatsApp(true)}>
+                  Enviar por WhatsApp
+                </button>
+              </div>
+            </section>
+            <section className="confirm__step" aria-labelledby="confirm-step-2">
+              <p id="confirm-step-2" className="confirm__step-label">
+                Paso 2 · Guardar recordatorio
+              </p>
+              <p className="confirm__step-hint">
+                Agrega el evento a tu calendario (6:00 p.m. a 2:00 a.m.).
+              </p>
               <div className="confirm__actions">
                 <a
                   className="btn"
@@ -221,9 +249,18 @@ function ConfirmBlock({ invite }) {
                   Descargar para Apple u otro calendario
                 </button>
               </div>
-            </div>
-          ) : null}
+            </section>
+          </div>
         </>
+      ) : confirmed === 'no' ? (
+        <div className="confirm__text">
+          <p className="confirm__status confirm__status--done" role="status">
+            {confirmedStatusMessage('no')}
+          </p>
+          <p>
+            Respuesta guardada: <strong>No podré asistir</strong>
+          </p>
+        </div>
       ) : (
         <>
           <div className="confirm__text">
@@ -239,15 +276,15 @@ function ConfirmBlock({ invite }) {
               type="button"
               className="btn"
               disabled={locked}
-              onClick={() => openWhatsApp(true)}
+              onClick={() => submitConfirmacion(true)}
             >
-              Sí, ahí estaré
+              Sí, voy a asistir
             </button>
             <button
               type="button"
               className="btn btn--ghost"
               disabled={locked}
-              onClick={() => openWhatsApp(false)}
+              onClick={() => submitConfirmacion(false)}
             >
               No podré ir
             </button>
