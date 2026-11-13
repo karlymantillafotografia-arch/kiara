@@ -611,46 +611,6 @@
   outline: none;
 }
 
-.music-toggle {
-  position: fixed;
-  top: calc(0.85rem + var(--safe-top));
-  right: max(0.85rem, var(--page-pad));
-  z-index: 40;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  min-height: 2.4rem;
-  padding: 0.4rem 0.85rem;
-  border: 1px solid rgba(143, 45, 69, 0.22);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.88);
-  color: var(--navy);
-  box-shadow: 0 10px 24px rgba(28, 47, 68, 0.14);
-  font-family: "Libre Baskerville", serif;
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.music-toggle:hover,
-.music-toggle:focus-visible {
-  transform: translateY(-1px);
-  outline: none;
-  background: rgba(255, 255, 255, 0.96);
-}
-
-.music-toggle.is-off {
-  color: var(--wine-mid);
-  opacity: 0.92;
-}
-
-.music-toggle__text {
-  line-height: 1;
-}
-
 .btn--ghost {
   background: transparent;
   color: var(--wine);

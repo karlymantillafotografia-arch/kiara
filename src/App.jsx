@@ -184,10 +184,6 @@ export default function App() {
     })
   }
 
-  function toggleMusic() {
-    setMusicOn((current) => !current)
-  }
-
   if (isRegistro) {
     return <Registro />
   }
@@ -209,19 +205,6 @@ export default function App() {
           <span className="page-scape__spark page-scape__spark--3">✦</span>
           <span className="page-scape__spark page-scape__spark--4">✦</span>
         </div>
-      ) : null}
-
-      {opened ? (
-        <button
-          type="button"
-          className={`music-toggle ${musicOn ? 'is-on' : 'is-off'}`}
-          onClick={toggleMusic}
-          aria-pressed={musicOn}
-          aria-label={musicOn ? 'Silenciar música' : 'Activar música'}
-        >
-          <span aria-hidden="true">{musicOn ? '♪' : '✕'}</span>
-          <span className="music-toggle__text">{musicOn ? 'Música' : 'Silencio'}</span>
-        </button>
       ) : null}
 
       <AnimatePresence mode="wait">
