@@ -14,12 +14,7 @@ alembic upgrade head
 
 ## Front
 
-En la raíz del proyecto (`.env`):
+Supabase URL/key y el dominio `https://kiara-phi.vercel.app/` van quemados en `src/env.js`.
+No hace falta configurar env vars en Vercel para el front.
 
-```env
-VITE_SUPABASE_URL=https://wjiwjugsvzqrnkswjneb.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJ...tu_anon_key
-DATABASE_URL=postgresql+psycopg://postgres....
-```
-
-La anon key: Supabase → Project Settings → API → `anon` `public`.
+Para migraciones locales sí hace falta `DATABASE_URL` en `.env` (ver `.env.example`).

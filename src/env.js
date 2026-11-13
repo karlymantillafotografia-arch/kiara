@@ -1,25 +1,21 @@
 /**
- * Variables públicas del front (Vite / Vercel).
- * En Vercel: Settings → Environment Variables → Production (y Preview si quieres).
- * Deben empezar con VITE_ para que el build las incluya.
+ * Config fija del front (sin variables de Vercel / .env).
  */
 
-function read(name, fallback = '') {
-  const value = import.meta.env[name]
-  if (value == null || String(value).trim() === '') return fallback
-  return String(value).trim()
-}
-
 export const ENV = {
-  supabaseUrl: read('VITE_SUPABASE_URL'),
-  supabaseAnonKey: read('VITE_SUPABASE_ANON_KEY'),
-  publicInviteUrl: read('VITE_PUBLIC_INVITE_URL'),
+  supabaseUrl: 'https://wjiwjugsvzqrnkswjneb.supabase.co',
+  supabaseAnonKey: 'sb_publishable_gPRmnSPo5vn_frNqb5h05g_u-K5qdA1',
+  publicInviteUrl: 'https://kiara-phi.vercel.app/',
 }
 
 export function hasSupabaseEnv() {
-  return Boolean(ENV.supabaseUrl && ENV.supabaseAnonKey)
+  return true
 }
 
 export function hasPublicInviteUrl() {
-  return Boolean(ENV.publicInviteUrl)
+  return true
+}
+
+export function resolveInviteBase() {
+  return ENV.publicInviteUrl
 }

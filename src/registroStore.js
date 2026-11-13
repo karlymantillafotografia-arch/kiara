@@ -1,4 +1,4 @@
-import { ENV } from './env'
+import { resolveInviteBase } from './env'
 
 const PIN_KEY = 'xv-kiara-registro-ok'
 
@@ -68,9 +68,7 @@ export function formatFecha(iso) {
 
 /** Link personalizado de la tarjeta (WhatsApp / QR físico). */
 export function buildInviteUrl(tarjeta, pases = 2) {
-  const publicBase = ENV.publicInviteUrl
-  const base = publicBase || window.location.href
-  const url = new URL(base)
+  const url = new URL(resolveInviteBase())
   url.search = ''
   url.hash = ''
   // %20 funciona mejor que + en WhatsApp

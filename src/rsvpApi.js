@@ -9,9 +9,7 @@ import { isSupabaseConfigured, supabase } from './supabaseClient'
 
 function assertConfigured() {
   if (!isSupabaseConfigured()) {
-    throw new Error(
-      'Falta configurar VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY en Vercel / .env',
-    )
+    throw new Error('Supabase no está disponible')
   }
 }
 
@@ -88,9 +86,8 @@ export async function saveConfirmacion(entry) {
 
   let row
   if (existing?.id) {
-    if (!payload.invite_url && existing.invite_url) {
-      payload.invite_url = existing.invite_url
-    }
+    // Siempre refrescar el link (evita quedar pegados a ngrok viejo)
+    payload.invite_url = link
     const { data, error } = await supabase
       .from('guests')
       .update(payload)

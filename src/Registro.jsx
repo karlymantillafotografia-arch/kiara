@@ -10,7 +10,7 @@ import {
   lockRegistro,
   unlockRegistro,
 } from './registroStore'
-import { ENV, hasPublicInviteUrl } from './env'
+import { ENV } from './env'
 import { createGuestPack } from './guestPack'
 import { deleteConfirmacion, fetchConfirmaciones, saveConfirmacion } from './rsvpApi'
 
@@ -126,9 +126,7 @@ export default function Registro() {
       const copied = await copyText(shareText)
       setOkMsg(
         copied
-          ? publicUrlConfigured()
-            ? `Listo: QR + PDF físico + enlace digital copiado (${tarjeta})`
-            : `QR y PDF listos. Falta VITE_PUBLIC_INVITE_URL para WhatsApp (ahora es localhost)`
+          ? `Listo: QR + PDF físico + enlace digital copiado (${tarjeta})`
           : `QR y PDF listos para ${tarjeta}. Copia el enlace desde la tabla.`,
       )
     } catch (err) {
@@ -169,10 +167,6 @@ export default function Registro() {
       setCopiedId(row.id)
       window.setTimeout(() => setCopiedId(''), 1800)
     }
-  }
-
-  function publicUrlConfigured() {
-    return hasPublicInviteUrl()
   }
 
   async function handleDelete(id) {
@@ -297,19 +291,10 @@ export default function Registro() {
             QR del invitado).
           </li>
           <li>
-            Al escanear el QR abren su invitación y confirman; la tabla se actualiza sola. Usa{' '}
-            <strong>https</strong> (ngrok/dominio); localhost no abre en WhatsApp.
+            Al escanear el QR abren su invitación y confirman; la tabla se actualiza sola.
           </li>
         </ol>
-        {publicUrlConfigured() ? (
-          <p className="registro__ok">
-            Enlace público activo: {ENV.publicInviteUrl}
-          </p>
-        ) : (
-          <p className="registro__error">
-            Falta URL pública. Configura VITE_PUBLIC_INVITE_URL en .env y reinicia el servidor.
-          </p>
-        )}
+        <p className="registro__ok">Enlace público: {ENV.publicInviteUrl}</p>
       </section>
 
       <section className="registro__stats" aria-label="Filtrar por estado">
