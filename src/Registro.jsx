@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import CardQr from './CardQr'
+import TarjetaFisica from './TarjetaFisica'
 import {
   buildInviteUrl,
   exportRegistrosCsv,
@@ -9,6 +10,7 @@ import {
   lockRegistro,
   unlockRegistro,
 } from './registroStore'
+import { createGuestPack } from './guestPack'
 import { deleteConfirmacion, fetchConfirmaciones, saveConfirmacion } from './rsvpApi'
 
 const EMPTY_FORM = {
@@ -26,7 +28,10 @@ export default function Registro() {
   const [loading, setLoading] = useState(true)
   const [form, setForm] = useState(EMPTY_FORM)
   const [copiedId, setCopiedId] = useState('')
+  const [packBusyId, setPackBusyId] = useState('')
+  const [creating, setCreating] = useState(false)
   const [filter, setFilter] = useState('todas') // todas | si | no | pendiente
+  const [tab, setTab] = useState('lista') // lista | diseno
 
   const totals = useMemo(() => {
     const si = rows.filter((row) => row.estado === 'si')
@@ -97,30 +102,52 @@ export default function Registro() {
       return
     }
 
+    const pases = form.pases
+    const notas = form.notas
+
     try {
-      const link = buildInviteUrl(tarjeta, form.pases)
-      const shareText = inviteWhatsAppShareText(tarjeta, form.pases)
+      setCreating(true)
+      const link = buildInviteUrl(tarjeta, pases)
+      const shareText = inviteWhatsAppShareText(tarjeta, pases)
       const data = await saveConfirmacion({
         tarjeta,
-        pases: form.pases,
-        notas: form.notas,
+        pases,
+        notas,
         estado: 'pendiente',
         link,
       })
       setRows(data.rows || [])
       setForm(EMPTY_FORM)
       setError('')
-      setOkMsg(`Tarjeta creada: ${tarjeta}`)
+      setOkMsg(`Creando QR e invitación física de ${tarjeta}…`)
+
+      await createGuestPack(tarjeta, pases)
       const copied = await copyText(shareText)
-      if (copied) {
-        setOkMsg(
-          publicUrlConfigured()
-            ? `Tarjeta creada. Mensaje con enlace https copiado: ${tarjeta}`
-            : `Tarjeta creada, pero falta VITE_PUBLIC_INVITE_URL (ahora usa localhost y no abre en WhatsApp)`,
-        )
-      }
+      setOkMsg(
+        copied
+          ? publicUrlConfigured()
+            ? `Listo: QR + PDF físico + enlace digital copiado (${tarjeta})`
+            : `QR y PDF listos. Falta VITE_PUBLIC_INVITE_URL para WhatsApp (ahora es localhost)`
+          : `QR y PDF listos para ${tarjeta}. Copia el enlace desde la tabla.`,
+      )
     } catch (err) {
       setError(err.message || 'No se pudo crear la tarjeta')
+      setOkMsg('')
+    } finally {
+      setCreating(false)
+    }
+  }
+
+  async function handleDownloadPack(row) {
+    try {
+      setPackBusyId(row.id)
+      setError('')
+      await createGuestPack(row.tarjeta, row.pases)
+      setOkMsg(`Descargados QR + PDF de ${row.tarjeta}`)
+    } catch (err) {
+      setError(err.message || 'No se pudo descargar el paquete')
+    } finally {
+      setPackBusyId('')
     }
   }
 
@@ -211,31 +238,66 @@ export default function Registro() {
       <header className="registro__header">
         <div>
           <p className="registro__eyebrow">XV Kiara</p>
-          <h1>Registro por tarjeta</h1>
-          <p className="registro__live">Se actualiza sola cada pocos segundos</p>
+          <h1>{tab === 'diseno' ? 'Diseño tarjeta física' : 'Registro por tarjeta'}</h1>
+          <p className="registro__live">
+            {tab === 'diseno'
+              ? 'Plantilla con la forma del boceto y QR por invitado'
+              : 'Se actualiza sola cada pocos segundos'}
+          </p>
         </div>
         <div className="registro__header-actions">
           <button type="button" className="btn btn--ghost" onClick={refresh}>
             Actualizar
           </button>
-          <button type="button" className="btn btn--ghost" onClick={handleExport}>
-            Exportar CSV
-          </button>
+          {tab === 'lista' ? (
+            <button type="button" className="btn btn--ghost" onClick={handleExport}>
+              Exportar CSV
+            </button>
+          ) : null}
           <button type="button" className="btn btn--ghost" onClick={handleLock}>
             Cerrar
           </button>
         </div>
       </header>
 
+      <nav className="registro__tabs no-print" aria-label="Secciones del registro">
+        <button
+          type="button"
+          className={tab === 'lista' ? 'is-active' : ''}
+          onClick={() => setTab('lista')}
+        >
+          Registro
+        </button>
+        <button
+          type="button"
+          className={tab === 'diseno' ? 'is-active' : ''}
+          onClick={() => setTab('diseno')}
+        >
+          Diseño físico
+        </button>
+      </nav>
+
+      {tab === 'diseno' ? <TarjetaFisica rows={rows} /> : null}
+
+      {tab === 'lista' ? (
+        <>
       <section className="registro__howto">
-        <h2>Tarjetas digitales y físicas (QR)</h2>
+        <h2>Una creación = tres cosas</h2>
         <ol>
-          <li>Crea la tarjeta: se guarda abajo y se copia el enlace.</li>
-          <li>Descarga el QR (solo lo ves tú aquí) e imprímelo en la tarjeta física.</li>
-          <li>Al escanear el QR abren su invitación y confirman; la tabla cambia sola.</li>
           <li>
-            Los enlaces deben ser <strong>https</strong> (ngrok/dominio). Localhost no abre en
-            WhatsApp de otras personas.
+            <strong>Invitación digital:</strong> se guarda el registro y se copia el mensaje con
+            enlace personalizado.
+          </li>
+          <li>
+            <strong>QR:</strong> se descarga el PNG para imprimir o pegar.
+          </li>
+          <li>
+            <strong>Tarjeta física:</strong> se descarga el PDF con el diseño fijo (nombre, pases y
+            QR del invitado).
+          </li>
+          <li>
+            Al escanear el QR abren su invitación y confirman; la tabla se actualiza sola. Usa{' '}
+            <strong>https</strong> (ngrok/dominio); localhost no abre en WhatsApp.
           </li>
         </ol>
         {publicUrlConfigured() ? (
@@ -302,7 +364,7 @@ export default function Registro() {
       </p>
 
       <form className="registro__form" onSubmit={handleCreateCard}>
-        <h2>Crear tarjeta y enlace</h2>
+        <h2>Crear tarjeta (QR + digital + física)</h2>
         <div className="registro__fields">
           <label>
             Nombre de la tarjeta
@@ -311,6 +373,7 @@ export default function Registro() {
               onChange={(event) => setForm({ ...form, tarjeta: event.target.value })}
               placeholder="Familia Morales"
               required
+              disabled={creating}
             />
           </label>
           <label>
@@ -321,6 +384,7 @@ export default function Registro() {
               max="12"
               value={form.pases}
               onChange={(event) => setForm({ ...form, pases: Number(event.target.value) || 1 })}
+              disabled={creating}
             />
           </label>
           <label className="registro__notes">
@@ -329,13 +393,14 @@ export default function Registro() {
               value={form.notas}
               onChange={(event) => setForm({ ...form, notas: event.target.value })}
               placeholder="Opcional"
+              disabled={creating}
             />
           </label>
         </div>
         {error ? <p className="registro__error">{error}</p> : null}
         {okMsg ? <p className="registro__ok">{okMsg}</p> : null}
-        <button type="submit" className="btn">
-          Crear tarjeta y copiar enlace
+        <button type="submit" className="btn" disabled={creating}>
+          {creating ? 'Generando QR y PDF…' : 'Crear tarjeta (QR + digital + física)'}
         </button>
       </form>
 
@@ -397,6 +462,14 @@ export default function Registro() {
                       >
                         {copiedId === row.id ? 'Copiado' : 'Copiar enlace'}
                       </button>
+                      <button
+                        type="button"
+                        className="registro__copy"
+                        onClick={() => handleDownloadPack(row)}
+                        disabled={packBusyId === row.id}
+                      >
+                        {packBusyId === row.id ? 'Generando…' : 'QR + PDF'}
+                      </button>
                       <div className="registro__link-preview">{link}</div>
                     </td>
                     <td data-label="Fecha">{formatFecha(row.fecha)}</td>
@@ -416,8 +489,10 @@ export default function Registro() {
           </tbody>
         </table>
       </div>
+        </>
+      ) : null}
 
-      <a className="registro__back" href="./">
+      <a className="registro__back no-print" href="./">
         Volver a la invitación
       </a>
     </div>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import QRCode from 'qrcode'
 
-export default function CardQr({ link, tarjeta }) {
+export default function CardQr({ link, tarjeta, size = 120, showDownload = true }) {
   const [src, setSrc] = useState('')
   const [error, setError] = useState('')
 
@@ -9,7 +9,7 @@ export default function CardQr({ link, tarjeta }) {
     let cancelled = false
     setError('')
     QRCode.toDataURL(link, {
-      width: 280,
+      width: Math.max(180, size * 2),
       margin: 2,
       color: {
         dark: '#1a3348',
@@ -26,7 +26,7 @@ export default function CardQr({ link, tarjeta }) {
     return () => {
       cancelled = true
     }
-  }, [link])
+  }, [link, size])
 
   function downloadQr() {
     if (!src) return
@@ -45,10 +45,16 @@ export default function CardQr({ link, tarjeta }) {
 
   return (
     <div className="registro__qr">
-      <img src={src} alt={`QR de ${tarjeta}`} />
-      <button type="button" className="registro__copy" onClick={downloadQr}>
-        Descargar QR
-      </button>
+      <img
+        src={src}
+        alt={`QR de ${tarjeta}`}
+        style={{ width: size, height: size }}
+      />
+      {showDownload ? (
+        <button type="button" className="registro__copy" onClick={downloadQr}>
+          Descargar QR
+        </button>
+      ) : null}
     </div>
   )
 }

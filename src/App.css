@@ -1326,3 +1326,787 @@
     color: var(--wine-mid);
   }
 }
+
+/* —— Tabs registro / diseño físico —— */
+.registro__tabs {
+  display: flex;
+  gap: 0.45rem;
+  margin: 0 0 1rem;
+}
+
+.registro__tabs button {
+  flex: 1;
+  min-height: 2.6rem;
+  border: 1px solid rgba(143, 45, 69, 0.22);
+  background: rgba(255, 255, 255, 0.75);
+  color: var(--navy);
+  font-family: "Libre Baskerville", serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.registro__tabs button.is-active {
+  background: linear-gradient(120deg, var(--navy), var(--wine));
+  color: #f6f4f5;
+  border-color: transparent;
+}
+
+/* —— Diseño tarjeta física (forma del boceto) —— */
+.phys {
+  margin-bottom: 1.25rem;
+}
+
+.phys__intro {
+  margin-bottom: 0.75rem;
+}
+
+.phys__intro h2 {
+  margin: 0 0 0.3rem;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.45rem;
+  color: var(--navy);
+}
+
+.phys__intro p {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  color: var(--ink-soft);
+}
+
+.phys__stage {
+  margin-bottom: 1rem;
+  padding: 0.75rem 0.35rem 1rem;
+  overflow-x: auto;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(143, 45, 69, 0.14);
+}
+
+/* Nodo de respaldo para PDF (se clona on-screen al exportar) */
+.phys__export-root {
+  position: absolute;
+  width: 21.1cm;
+  height: 13.8cm;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  pointer-events: none;
+}
+
+.phys-export {
+  --phys-accent: #8f2d45;
+  --phys-ink: #1a3348;
+  --phys-soft: #3d5f7a;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75cm;
+  width: 21.1cm;
+  height: 13.8cm;
+  padding: 0.4cm;
+  box-sizing: border-box;
+  background: #ffffff;
+  color: var(--phys-ink);
+}
+
+.phys-export .phys-card__panel--piece {
+  flex: 0 0 auto;
+  border: 1px solid rgba(26, 51, 72, 0.22) !important;
+  border-right: 1px solid rgba(26, 51, 72, 0.22) !important;
+  box-shadow: 0 4px 14px rgba(28, 47, 68, 0.08);
+}
+
+.phys-export .phys-card__panel--arch {
+  align-self: flex-start;
+  margin: 0;
+}
+
+.phys__print-only {
+  display: none;
+}
+
+.phys__view-toggle {
+  display: flex;
+  flex: 1;
+  min-width: min(100%, 280px);
+  gap: 0.35rem;
+}
+
+.phys__view-toggle button {
+  flex: 1;
+  min-height: 2.5rem;
+  border: 1px solid rgba(143, 45, 69, 0.22);
+  background: #fff;
+  color: var(--navy);
+  font-family: "Libre Baskerville", serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.phys__view-toggle button.is-active {
+  background: linear-gradient(120deg, var(--navy), var(--wine));
+  color: #f6f4f5;
+  border-color: transparent;
+}
+
+.phys__editor-drawer {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(143, 45, 69, 0.14);
+}
+
+.phys__editor-drawer summary {
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  font-family: "Libre Baskerville", serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--wine-mid);
+}
+
+.phys__editor {
+  padding: 0 1rem 1rem;
+}
+
+.phys__fields {
+  display: grid;
+  gap: 0.55rem;
+  max-height: 42vh;
+  overflow: auto;
+  padding-right: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.phys__fields label,
+.phys__colors label {
+  display: grid;
+  gap: 0.25rem;
+  font-family: "Libre Baskerville", serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--wine-mid);
+}
+
+.phys__fields input,
+.phys__fields textarea,
+.phys__toolbar select {
+  width: 100%;
+  min-height: 2.35rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid rgba(61, 95, 122, 0.2);
+  border-radius: 10px;
+  background: #fff;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1rem;
+  color: var(--navy);
+}
+
+.phys__fields textarea {
+  min-height: 4.2rem;
+  resize: vertical;
+}
+
+.phys__colors {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-bottom: 0.85rem;
+}
+
+.phys__colors input[type='color'] {
+  width: 100%;
+  height: 2.4rem;
+  padding: 0.15rem;
+  border: 1px solid rgba(61, 95, 122, 0.2);
+  background: #fff;
+}
+
+.phys__editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.phys__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: end;
+  margin-bottom: 0.75rem;
+}
+
+.phys__toolbar--nested {
+  margin-top: 0.35rem;
+}
+
+.phys__toolbar label {
+  display: grid;
+  gap: 0.3rem;
+  font-family: "Libre Baskerville", serif;
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--wine-mid);
+}
+
+.phys__toolbar select {
+  min-width: min(100%, 220px);
+}
+
+.phys__check {
+  display: flex !important;
+  align-items: center;
+  gap: 0.4rem;
+  text-transform: none;
+  letter-spacing: 0;
+  font-family: "Cormorant Garamond", serif !important;
+  font-size: 1rem !important;
+  color: var(--ink-soft) !important;
+}
+
+.phys-closed {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+}
+
+.phys-closed__caption {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  color: var(--ink-soft);
+}
+
+.phys-card__panel--arch-solo {
+  width: 4.5cm;
+  height: 8cm;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.phys-sheet {
+  overflow-x: auto;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px dashed transparent;
+}
+
+.phys-card {
+  --phys-accent: #8f2d45;
+  --phys-ink: #1a3348;
+  --phys-soft: #3d5f7a;
+  display: grid;
+  grid-template-columns: 7.5cm 7.5cm 4.5cm;
+  grid-template-rows: 13cm;
+  align-items: end;
+  gap: 0;
+  width: 19.5cm;
+  height: 13cm;
+  background: transparent;
+  color: var(--phys-ink);
+  box-shadow: none;
+}
+
+.phys-card__panel {
+  box-sizing: border-box;
+  padding: 0.45cm 0.35cm 0.4cm;
+  text-align: center;
+  overflow: hidden;
+}
+
+.phys-card__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.phys-card__panel > :not(.phys-card__bg) {
+  position: relative;
+  z-index: 1;
+}
+
+/* El nombre del panel 1 ya es absolute */
+.phys-card__panel--guest-only > .phys-card__guest--panel1 {
+  z-index: 2;
+}
+
+.phys-card__panel--left,
+.phys-card__panel--center {
+  position: relative;
+  width: 7.5cm;
+  height: 13cm;
+  border: 1px solid rgba(26, 51, 72, 0.18);
+  background-color: #fff;
+  box-shadow: 0 8px 20px rgba(28, 47, 68, 0.08);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* Vista unida: sin doble borde entre paneles */
+.phys-card > .phys-card__panel--left,
+.phys-card > .phys-card__panel--center {
+  border-right: none;
+}
+
+.phys-card__panel--left,
+.phys-card__panel--guest-only {
+  display: block;
+  padding: 0;
+  overflow: hidden;
+}
+
+.phys-card__panel--guest-only .phys-card__shape-label {
+  position: absolute;
+  top: 0.18cm;
+  left: 0.18cm;
+  z-index: 30;
+  margin-bottom: 0;
+}
+
+.phys-card__panel--center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5cm 0.38cm 1.5cm;
+}
+
+.phys-card__panel--photos .phys-card__shape-label,
+.phys-card__panel--center .phys-card__shape-label {
+  position: absolute;
+  top: 0.18cm;
+  left: 0.18cm;
+  z-index: 30;
+  margin-bottom: 0;
+}
+
+.phys-card__photo-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.phys-card__polaroid {
+  position: absolute;
+  margin: 0;
+  padding: 0.12cm;
+  background: #fff;
+  box-shadow:
+    0 0.08cm 0.18cm rgba(28, 47, 68, 0.18),
+    0 0.02cm 0.05cm rgba(28, 47, 68, 0.1);
+  border: 1px solid rgba(26, 51, 72, 0.08);
+  box-sizing: border-box;
+  transform-origin: center center;
+  pointer-events: none;
+}
+
+.phys-card__polaroid img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 22%;
+  pointer-events: none;
+}
+
+.phys-card__guest--panel1,
+.phys-card__guest.phys-card__guest--panel1,
+.phys-card__guest--panel1.phys-card__guest--variable {
+  position: absolute !important;
+  left: 0.8cm;
+  bottom: 1.5cm;
+  top: auto !important;
+  z-index: 12;
+  display: grid;
+  justify-items: start;
+  text-align: left;
+  margin: 0 !important;
+  padding: 0 !important;
+  gap: 0.28cm;
+  background: transparent !important;
+  border: none !important;
+  border-top: none !important;
+  transform-origin: left bottom;
+  pointer-events: none;
+}
+
+.phys-card__guest--panel1 strong {
+  font-size: var(--guest-size, 1.7rem);
+  line-height: 1.1;
+  color: var(--phys-accent);
+}
+
+.phys-card__guest--panel1 span {
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  color: var(--phys-soft);
+}
+
+.phys-card__shape-label {
+  display: inline-block;
+  margin-bottom: 0.25cm;
+  padding: 0.08cm 0.15cm;
+  border: 1px solid rgba(143, 45, 69, 0.28);
+  background: rgba(255, 255, 255, 0.92);
+  font-family: "Libre Baskerville", serif;
+  font-size: 0.45rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--phys-accent);
+}
+
+/* Solapa derecha: 4.5 × 8 cm con arco superior */
+.phys-card__panel--arch {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: end;
+  justify-content: center;
+  gap: 0.22cm;
+  width: 4.5cm;
+  height: 8cm;
+  padding: 0.85cm 0.28cm 0.85cm;
+  background-color: #fff;
+  border-radius: 2.25cm 2.25cm 0.15cm 0.15cm;
+  overflow: hidden;
+  border: 1.5px solid rgba(143, 45, 69, 0.45);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  margin: 0;
+  box-shadow:
+    0 8px 18px rgba(74, 20, 34, 0.1),
+    inset 0 1px 0 rgba(196, 165, 116, 0.4);
+}
+
+.phys-card__part {
+  width: 100%;
+  text-align: center;
+}
+
+.phys-card__part--1 {
+  margin-top: 0;
+  margin-bottom: 0.55cm;
+}
+
+.phys-card__part--2 {
+  margin-bottom: 0.55cm;
+}
+
+.phys-card__part--3 {
+  margin-bottom: 0.5cm;
+}
+
+.phys-card__part--4 {
+  margin-top: auto;
+  margin-bottom: 0;
+  padding-top: 0.3cm;
+  border-top: 1px solid rgba(143, 45, 69, 0.22);
+  display: grid;
+  gap: 0.14cm;
+}
+
+.phys-card__part--1 .phys-card__kicker {
+  margin: 0 0 0.22cm;
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+}
+
+.phys-card__part--1 .phys-card__name {
+  margin: 0.05cm 0 0.42cm;
+  font-size: 2.55rem;
+  line-height: 1.05;
+}
+
+.phys-card__part--1 .phys-card__sub {
+  margin: 0.15cm 0 0.32cm !important;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.2em;
+}
+
+.phys-card__part--1 .phys-card__ornament {
+  margin-bottom: 0;
+}
+
+.phys-card__kicker {
+  margin: 0 0 0.18cm;
+  font-family: "Libre Baskerville", serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--phys-accent);
+}
+
+.phys-card__panel h3 {
+  margin: 0.08cm 0 0.08cm;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--phys-ink);
+}
+
+.phys-card__panel p {
+  margin: 0 0 0.18cm;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 0.72rem;
+  line-height: 1.25;
+  color: var(--phys-soft);
+}
+
+.phys-card__strong {
+  font-size: 0.88rem !important;
+  color: var(--phys-ink) !important;
+}
+
+.phys-card__guest--variable:not(.phys-card__guest--panel1) {
+  position: relative;
+}
+
+.phys-card__var-tag {
+  position: absolute;
+  top: -0.55rem;
+  right: 0;
+  font-style: normal;
+  font-family: "Libre Baskerville", serif;
+  font-size: 0.5rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--phys-accent);
+  background: rgba(255, 255, 255, 0.92);
+  padding: 0.1rem 0.3rem;
+  border: 1px solid rgba(143, 45, 69, 0.22);
+}
+
+.phys-card__rule {
+  width: 42%;
+  height: 1px;
+  margin: 0.15cm auto 0.22cm;
+  background: linear-gradient(90deg, transparent, #c4a574, transparent);
+}
+
+.phys-card__name {
+  margin: 0.1cm 0 0.35cm;
+  font-family: "Great Vibes", cursive;
+  font-size: 2.15rem;
+  font-weight: 400;
+  line-height: 1.05;
+  color: var(--phys-ink);
+}
+
+.phys-card__sub {
+  margin: 0 0 0.28cm !important;
+  font-family: "Libre Baskerville", serif !important;
+  font-size: 0.68rem !important;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--phys-soft) !important;
+}
+
+.phys-card__ornament {
+  display: flex;
+  align-items: center;
+  gap: 0.2cm;
+  width: 70%;
+  margin: 0 auto 0.28cm;
+  color: var(--phys-accent);
+}
+
+.phys-card__ornament i {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #c4a574, transparent);
+}
+
+.phys-card__invite {
+  max-width: 24ch;
+  margin: 0 auto !important;
+  font-size: 1.05rem !important;
+  line-height: 1.3 !important;
+  font-style: italic;
+  color: var(--phys-ink) !important;
+}
+
+.phys-card__nowrap {
+  white-space: nowrap;
+}
+
+.phys-card__meta {
+  margin: 0 !important;
+  font-size: 1.05rem !important;
+  line-height: 1.4 !important;
+}
+
+.phys-card__guest {
+  display: grid;
+  gap: 0.05cm;
+  margin: 0.2cm 0 0.15cm !important;
+  padding-top: 0.2cm;
+  border-top: 1px solid rgba(143, 45, 69, 0.18);
+  font-size: 0.72rem !important;
+}
+
+.phys-card__guest strong {
+  font-family: "Great Vibes", cursive;
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: var(--phys-accent);
+}
+
+.phys-card__guest span {
+  font-family: "Libre Baskerville", serif;
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--phys-soft);
+}
+
+.phys-card__part--4 p {
+  margin: 0 !important;
+  font-family: "Libre Baskerville", serif !important;
+  font-size: 0.82rem !important;
+  line-height: 1.25 !important;
+  letter-spacing: 0.04em;
+  color: var(--phys-soft) !important;
+}
+
+.phys-card__part--4 p:first-child {
+  font-family: "Cormorant Garamond", serif !important;
+  font-size: 0.95rem !important;
+  letter-spacing: 0.06em;
+  color: var(--phys-accent) !important;
+}
+
+.phys-card__qr-wrap {
+  display: grid;
+  place-items: center;
+  padding: 0.12cm;
+  background: #fff;
+  border: 1px solid rgba(61, 95, 122, 0.16);
+}
+
+.phys-card__qr-wrap .registro__qr {
+  justify-items: center;
+}
+
+.phys-card__qr-wrap img {
+  width: 2.95cm !important;
+  height: 2.95cm !important;
+}
+
+.phys-card__panel--arch > .phys-card__kicker {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+}
+
+.phys-card__scan {
+  max-width: 18ch;
+  margin: 0.08cm 0 0 !important;
+  font-size: 0.78rem !important;
+  line-height: 1.28 !important;
+}
+
+.phys-card__guest-mini {
+  margin: 0.1cm 0 0 !important;
+  font-family: "Libre Baskerville", serif !important;
+  font-size: 0.45rem !important;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--phys-accent) !important;
+}
+
+.phys-card__size-tag {
+  display: block;
+  margin-top: 0.15cm;
+  font-family: "Libre Baskerville", serif;
+  font-size: 0.42rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(26, 51, 72, 0.45);
+}
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  .phys,
+  .phys * {
+    visibility: visible !important;
+  }
+
+  .no-print,
+  .registro__header,
+  .registro__tabs,
+  .registro__back,
+  .phys__toolbar,
+  .phys__hint,
+  .phys__intro,
+  .phys__editor,
+  .phys__editor-drawer,
+  .phys__stage,
+  .phys-card__shape-label,
+  .phys-card__var-tag {
+    display: none !important;
+  }
+
+  .phys__print-only {
+    display: block !important;
+  }
+
+  .registro,
+  .registro--open,
+  .phys {
+    position: static !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+  }
+
+  .phys-sheet {
+    padding: 0 !important;
+    border: none !important;
+    background: #fff !important;
+    overflow: visible !important;
+  }
+
+  .phys-card {
+    width: 19.5cm !important;
+    height: 13cm !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+
+  .phys-card__panel--left,
+  .phys-card__panel--center {
+    width: 7.5cm !important;
+    height: 13cm !important;
+  }
+
+  .phys-card__panel--arch {
+    width: 4.5cm !important;
+    height: 8cm !important;
+  }
+
+  .phys-card__polaroid,
+  .phys-card__polaroid img {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+}
