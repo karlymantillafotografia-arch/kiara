@@ -66,24 +66,17 @@ function PoolScene() {
 }
 
 function ConfirmBlock({ invite }) {
-  const [tarjeta, setTarjeta] = useState(invite.para || '')
-  const [nameError, setNameError] = useState('')
   const [status, setStatus] = useState('')
   const [saving, setSaving] = useState(false)
+  const tarjeta = (invite.para || '').trim() || 'Sin nombre en tarjeta'
 
   async function openWhatsApp(attending) {
-    const nombre = tarjeta.trim()
-    if (!nombre) {
-      setNameError('Escribe el nombre de la tarjeta para confirmar')
-      return
-    }
-    setNameError('')
     setSaving(true)
     setStatus('Guardando confirmación…')
 
     try {
       await saveConfirmacion({
-        tarjeta: nombre,
+        tarjeta,
         pases: invite.pases,
         estado: attending ? 'si' : 'no',
       })
@@ -98,7 +91,7 @@ function ConfirmBlock({ invite }) {
 
     const url = whatsappConfirmUrl({
       attending,
-      para: nombre,
+      para: tarjeta,
       pases: invite.pases,
     })
     window.open(url, '_blank', 'noopener,noreferrer')
@@ -113,18 +106,6 @@ function ConfirmBlock({ invite }) {
           pases. Después de esta fecha, no podremos asegurarlos.
         </p>
       </div>
-      <label className="confirm__card-name">
-        Nombre de la tarjeta
-        <input
-          type="text"
-          value={tarjeta}
-          onChange={(event) => setTarjeta(event.target.value)}
-          placeholder="Ej. Familia Morales"
-          autoComplete="name"
-          disabled={saving}
-        />
-      </label>
-      {nameError ? <p className="confirm__error">{nameError}</p> : null}
       {status ? <p className="confirm__status">{status}</p> : null}
       <div className="confirm__actions">
         <button type="button" className="btn" disabled={saving} onClick={() => openWhatsApp(true)}>
@@ -196,14 +177,15 @@ export default function App() {
             exit={{ opacity: 0, y: -12, filter: 'blur(8px)' }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           >
-            <img
-              className="cover__scene"
-              src="/cover-scene.jpg"
-              alt=""
-              aria-hidden="true"
-            />
+            <div className="cover__frame">
+              <img
+                className="cover__scene"
+                src="/cover-scene.jpg"
+                alt=""
+                aria-hidden="true"
+                draggable={false}
+              />
 
-            <div className="cover__content cover__content--scene">
               {invite.para ? (
                 <p className="cover__guest">
                   Para <strong>{invite.para}</strong>
@@ -216,7 +198,7 @@ export default function App() {
                 onClick={openInvitation}
                 aria-label="Toca el sello para abrir la invitación"
               >
-                <img src="/seal-km.png" alt="" />
+                <img src="/seal-km.png" alt="" draggable={false} />
               </button>
             </div>
           </motion.section>
