@@ -105,10 +105,10 @@ function toCalendarStamp(date) {
   return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
 }
 
-/** Datos del evento para recordatorio / calendario (inicio 6 p.m., fin 11 p.m.). */
+/** Datos del evento para recordatorio / calendario (inicio 6 p.m., fin 2 a.m.). */
 export function getCalendarEvent() {
   const start = new Date(EVENT.datetime)
-  const end = new Date(start.getTime() + 5 * 60 * 60 * 1000)
+  const end = new Date(start.getTime() + 8 * 60 * 60 * 1000)
   const title = `XV de ${EVENT.shortName}`
   const location = EVENT.venue
   const details = [
