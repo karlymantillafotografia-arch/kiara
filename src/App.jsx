@@ -92,17 +92,38 @@ function Countdown() {
 }
 
 function PoolScene() {
+  const hostRef = useRef(null)
+  const [shouldLoad, setShouldLoad] = useState(false)
+
+  useEffect(() => {
+    const host = hostRef.current
+    if (!host) return undefined
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldLoad(true)
+          io.disconnect()
+        }
+      },
+      { rootMargin: '180px 0px' },
+    )
+    io.observe(host)
+    return () => io.disconnect()
+  }, [])
+
   return (
-    <div className="pool-scene" aria-hidden="true">
-      <video
-        className="pool-scene__video"
-        src="/pool-party.mp4"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-      />
+    <div className="pool-scene" ref={hostRef} aria-hidden="true">
+      {shouldLoad ? (
+        <video
+          className="pool-scene__video"
+          src="/pool-party.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+        />
+      ) : null}
     </div>
   )
 }
@@ -313,14 +334,67 @@ export default function App() {
   const [opened, setOpened] = useState(false)
   const [musicOn, setMusicOn] = useState(true)
   const audioRef = useRef(null)
+  const openedRef = useRef(false)
+  const musicOnRef = useRef(true)
+
+  useEffect(() => {
+    openedRef.current = opened
+  }, [opened])
+
+  useEffect(() => {
+    musicOnRef.current = musicOn
+  }, [musicOn])
+
+  function stopMusicHard() {
+    const audio = audioRef.current
+    if (!audio) return
+    audio.pause()
+    audio.currentTime = 0
+    // Quita el src para cortar descarga/reproducción al salir del link
+    audio.removeAttribute('src')
+    audio.load()
+    musicOnRef.current = false
+    setMusicOn(false)
+  }
 
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return undefined
     audio.volume = BG_MUSIC_VOLUME
     audio.loop = true
+
+    function onVisibility() {
+      if (document.visibilityState === 'hidden') {
+        audio.pause()
+        return
+      }
+      if (openedRef.current && musicOnRef.current) {
+        if (!audio.getAttribute('src')) audio.src = BG_MUSIC_SRC
+        audio.play().catch(() => {
+          musicOnRef.current = false
+          setMusicOn(false)
+        })
+      }
+    }
+
+    function onLeavePage() {
+      stopMusicHard()
+    }
+
+    document.addEventListener('visibilitychange', onVisibility)
+    window.addEventListener('pagehide', onLeavePage)
+    window.addEventListener('beforeunload', onLeavePage)
+
     return () => {
-      audio.pause()
+      document.removeEventListener('visibilitychange', onVisibility)
+      window.removeEventListener('pagehide', onLeavePage)
+      window.removeEventListener('beforeunload', onLeavePage)
+      const current = audioRef.current
+      if (current) {
+        current.pause()
+        current.removeAttribute('src')
+        current.load()
+      }
     }
   }, [])
 
@@ -328,6 +402,9 @@ export default function App() {
     const audio = audioRef.current
     if (!audio || !opened) return
     if (musicOn) {
+      if (!audio.getAttribute('src')) {
+        audio.src = BG_MUSIC_SRC
+      }
       audio.play().catch(() => {
         setMusicOn(false)
       })
@@ -342,6 +419,7 @@ export default function App() {
     const audio = audioRef.current
     if (audio) {
       audio.volume = BG_MUSIC_VOLUME
+      audio.src = BG_MUSIC_SRC
       audio.play().catch(() => {
         setMusicOn(false)
       })
@@ -358,7 +436,7 @@ export default function App() {
 
   return (
     <div className={`app ${opened ? 'app--opened' : 'app--cover'}`}>
-      <audio ref={audioRef} src={BG_MUSIC_SRC} preload="auto" loop />
+      <audio ref={audioRef} preload="none" loop />
 
       {opened ? (
         <div className="page-scape" aria-hidden="true">
@@ -392,6 +470,8 @@ export default function App() {
                 alt=""
                 aria-hidden="true"
                 draggable={false}
+                fetchPriority="high"
+                decoding="async"
               />
 
               {invite.para ? (
@@ -454,7 +534,7 @@ export default function App() {
               animate="show"
             >
               <div className="intro__photo">
-                <img src="/kiara.png" alt={EVENT.name} />
+                <img src="/kiara.png" alt={EVENT.name} loading="lazy" decoding="async" />
                 <div className="intro__gradient" aria-hidden="true" />
               </div>
               <div className="intro__copy">
@@ -523,6 +603,8 @@ export default function App() {
                   className="dress__image"
                   src="/dress-code.jpg"
                   alt="Guía de looks casual y semiformales para mujeres y hombres"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
 
@@ -532,6 +614,8 @@ export default function App() {
                   src="/lluvia-sobres.gif"
                   alt=""
                   aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="gift__frame" aria-hidden="true" />
                 <div className="gift__copy">
@@ -549,7 +633,12 @@ export default function App() {
               animate="show"
             >
               <div className="rsvp__photo">
-                <img src="/kiara-confirm.png" alt={EVENT.name} />
+                <img
+                  src="/kiara-confirm.png"
+                  alt={EVENT.name}
+                  loading="lazy"
+                  decoding="async"
+                />
                 <div className="rsvp__photo-fade" aria-hidden="true" />
               </div>
               <div className="rsvp__body">
