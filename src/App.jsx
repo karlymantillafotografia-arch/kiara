@@ -515,6 +515,17 @@ export default function App() {
                 </div>
               </div>
 
+              <div className="dress" aria-label="Dress code">
+                <p className="details__label">Dress code</p>
+                <h3 className="dress__title">Casual-semiformal</h3>
+                <p className="dress__text">Una guía de looks para inspirarte ese día.</p>
+                <img
+                  className="dress__image"
+                  src="/dress-code.jpg"
+                  alt="Guía de looks casual y semiformales para mujeres y hombres"
+                />
+              </div>
+
               <div className="gift" aria-label="Lluvia de sobres">
                 <img
                   className="gift__bg"

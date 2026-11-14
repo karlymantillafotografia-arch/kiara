@@ -472,7 +472,7 @@
 }
 
 .intro__message {
-  margin: 0 auto;
+    margin: 0 auto;
   max-width: 34ch;
   font-family: "Cormorant Garamond", serif;
   font-size: clamp(1.02rem, 4.2vw, 1.15rem);
@@ -567,7 +567,7 @@
 }
 
 .map {
-  position: relative;
+    position: relative;
   overflow: hidden;
   margin: 0 0 0.85rem;
   border: 1px solid rgba(61, 95, 122, 0.2);
@@ -642,7 +642,7 @@
 .pool-scene {
   position: absolute;
   inset: 0;
-  z-index: 0;
+    z-index: 0;
   overflow: hidden;
   pointer-events: none;
 }
@@ -698,6 +698,36 @@
   color: #f0b4c0;
 }
 
+.dress {
+  margin-top: 1.35rem;
+  text-align: center;
+}
+
+.dress__title {
+  margin: 0.15rem 0 0.35rem;
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(1.55rem, 6.5vw, 2rem);
+  font-weight: 500;
+  color: var(--navy);
+}
+
+.dress__text {
+  margin: 0 auto 0.85rem;
+  max-width: 32ch;
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(0.98rem, 4vw, 1.08rem);
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+.dress__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #fff;
+  border: 1px solid rgba(61, 95, 122, 0.14);
+}
+
 /* Lluvia de sobres */
 .gift {
   position: relative;
@@ -714,7 +744,7 @@
 }
 
 .gift__bg {
-  position: absolute;
+    position: absolute;
   inset: 0;
   z-index: 0;
   width: 100%;
@@ -727,7 +757,7 @@
 .gift__frame {
   position: absolute;
   inset: 6px;
-  z-index: 1;
+    z-index: 1;
   border: 1px solid rgba(111, 147, 176, 0.55);
   pointer-events: none;
 }
@@ -1162,7 +1192,7 @@
 .registro__stats button,
 .registro__stat {
   padding: 0.7rem 0.4rem;
-  text-align: center;
+    text-align: center;
   background: rgba(255, 255, 255, 0.82);
   border: 1px solid rgba(61, 95, 122, 0.12);
 }
@@ -1314,7 +1344,7 @@
 }
 
 .registro__row-actions {
-  display: flex;
+    display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
 }
@@ -1549,7 +1579,7 @@
 .phys__fields input,
 .phys__fields textarea,
 .phys__toolbar select {
-  width: 100%;
+      width: 100%;
   min-height: 2.35rem;
   padding: 0.45rem 0.65rem;
   border: 1px solid rgba(61, 95, 122, 0.2);
@@ -1640,8 +1670,8 @@
   width: 4.5cm;
   height: 8cm;
   margin: 0;
-  box-sizing: border-box;
-}
+      box-sizing: border-box;
+    }
 
 .phys-sheet {
   overflow-x: auto;
@@ -1753,7 +1783,7 @@
 }
 
 .phys-card__polaroid {
-  position: absolute;
+    position: absolute;
   margin: 0;
   padding: 0.12cm;
   background: #fff;
@@ -1931,7 +1961,7 @@
 .phys-card__var-tag {
   position: absolute;
   top: -0.55rem;
-  right: 0;
+    right: 0;
   font-style: normal;
   font-family: "Libre Baskerville", serif;
   font-size: 0.5rem;
